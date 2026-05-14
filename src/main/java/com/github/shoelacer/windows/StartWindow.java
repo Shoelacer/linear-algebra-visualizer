@@ -1,14 +1,23 @@
 package com.github.shoelacer.windows;
 
-import javafx.scene.layout.StackPane;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 
 public class StartWindow {
 
 
-    public StackPane getPane(){
-        StackPane pane = new StackPane();
+    public Scene getPane() throws Exception {
 
-        return pane;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("StartWindow.fxml"));
+        loader.setController(this);
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root,800,600);
+
+        return scene;
     }
 
 }

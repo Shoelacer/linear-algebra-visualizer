@@ -22,8 +22,8 @@ public class Launch extends Application {
         launch(args);
     }
     @Override
-    public void start(Stage window) {
-        window.setScene(new Scene(new StartWindow().getPane()));
+    public void start(Stage window) throws Exception {
+        window.setScene((new StartWindow()).getPane());
         window.show();
     }
 }
