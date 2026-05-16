@@ -1,6 +1,7 @@
 package com.github.shoelacer;
 
 import com.github.shoelacer.windows.StartWindow;
+import com.github.shoelacer.windows.VisualizerWindow;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.Button;
@@ -23,7 +24,7 @@ public class Launch extends Application {
     }
     @Override
     public void start(Stage window) throws Exception {
-        window.setScene((new StartWindow()).getPane());
+        window.setScene((new StartWindow(window)).getPane());
         window.show();
     }
 }
