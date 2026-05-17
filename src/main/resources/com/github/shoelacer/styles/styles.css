@@ -4,7 +4,7 @@
     -fx-font-size: 12px;
 
     -bg-dark: #1a1a2a;
-    -bg-panel: #222232;
+    -bg-panel: #323242;
     -bg-card: #555565;
     -bg-input: #2a2a3a;
 
@@ -12,6 +12,7 @@
     -text-secondary: #b0b0c0;
     -text-muted: #707080;
 }
+
 
 .root {
     -fx-background-color: -bg-dark;
@@ -27,4 +28,9 @@ Label{
 Button{
     -fx-background-color:-bg-card;
 
+}
+
+.nav-bar{
+    -fx-background-color:-bg-panel;
+    -fx-font-size: 20px;
 }

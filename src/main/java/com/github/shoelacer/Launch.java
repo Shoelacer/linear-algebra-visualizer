@@ -25,6 +25,7 @@ public class Launch extends Application {
     @Override
     public void start(Stage window) throws Exception {
         window.setScene((new StartWindow(window)).getPane());
+        window.setResizable(false);
         window.show();
     }
 }

@@ -20,14 +20,14 @@ public class StartWindow {
         loader.setController(this);
         Parent root = loader.load();
 
-        Scene scene = new Scene(root,800,600);
+        Scene scene = new Scene(root,600,400);
         scene.getStylesheets().add(getClass().getResource("../styles/styles.css").toExternalForm());
         return scene;
     }
 
     public void enterVisualizer(ActionEvent event) throws Exception {
         System.out.println("Entering Visualizer");
-        window.setScene((new VisualizerWindow()).getPane());
+        window.setScene((new VisualizerWindow(window)).getPane());
     }
 
 }
