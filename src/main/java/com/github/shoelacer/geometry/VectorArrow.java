@@ -30,14 +30,18 @@ public class VectorArrow extends Group {
 
     private void rotateTo(double x, double y, double z) {
         double length = Math.sqrt(x*x + y*y + z*z);
-        double xyLength = Math.sqrt(x*x + y*y);
-
-        double angleY = Math.atan2(x, z);
-        double angleX = Math.atan2(-y, xyLength);
-
+        /*TODO
+        * Fix this because since the rotates are applied one by one, it ends up rotating them incorrectly.
+        *
+        *   */
+        double angleY = Math.atan2(-x, z);
+        double angleX = Math.atan2(y, z);
+        double angleZ = Math.atan2(y, x);
+        System.out.printf("Angle X: %f, Angle Y: %f, Angle Z: %f\n", Math.toDegrees(angleX),Math.toDegrees(angleY),Math.toDegrees(angleZ));
         getTransforms().addAll(
-                new Rotate(Math.toDegrees(angleY), 0, 0, 0, Rotate.Y_AXIS),
-                new Rotate(Math.toDegrees(angleX), 0, 0, 0, Rotate.X_AXIS)
+                //new Rotate(Math.toDegrees(angleX), 0,0,0,Rotate.X_AXIS),
+                //new Rotate(Math.toDegrees(angleY), 0, 0, 0, Rotate.Y_AXIS),
+                new Rotate(Math.toDegrees(angleZ), 0, 0, 0, Rotate.Z_AXIS)
         );
     }
 }
