@@ -41,7 +41,7 @@
                <children>
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="159.0" text="Objects" />
                   <ListView maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="297.0" prefWidth="160.0" style="-fx-border-style: none;" />
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="157.0" text="Add Vector">
+                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="157.0" text="Add Vector" onAction="#addVector">
                      <VBox.margin>
                         <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                      </VBox.margin>

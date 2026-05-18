@@ -19,6 +19,7 @@ public class VectorArrow extends Group {
         shaft.setTranslateY(length / 2);
 
         // Tip (small sphere at the end)
+        // Might change to cone later
         Sphere tip = new Sphere(0.12);
         tip.setMaterial(new PhongMaterial(color));
         tip.setTranslateY(length);
