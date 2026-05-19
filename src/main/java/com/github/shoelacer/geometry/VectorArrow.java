@@ -1,5 +1,6 @@
 package com.github.shoelacer.geometry;
 
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -28,20 +29,38 @@ public class VectorArrow extends Group {
         rotateTo(x, y, z);
     }
 
+
     private void rotateTo(double x, double y, double z) {
-        double length = Math.sqrt(x*x + y*y + z*z);
-        /*TODO
-        * Fix this because since the rotates are applied one by one, it ends up rotating them incorrectly.
-        *
-        *   */
-        double angleY = Math.atan2(-x, z);
-        double angleX = Math.atan2(y, z);
-        double angleZ = Math.atan2(y, x);
-        System.out.printf("Angle X: %f, Angle Y: %f, Angle Z: %f\n", Math.toDegrees(angleX),Math.toDegrees(angleY),Math.toDegrees(angleZ));
-        getTransforms().addAll(
-                //new Rotate(Math.toDegrees(angleX), 0,0,0,Rotate.X_AXIS),
-                //new Rotate(Math.toDegrees(angleY), 0, 0, 0, Rotate.Y_AXIS),
-                new Rotate(Math.toDegrees(angleZ), 0, 0, 0, Rotate.Z_AXIS)
-        );
+        Rotate orientation = new Rotate();
+        Point3D target = new Point3D(x, y, z).normalize();
+        Point3D up = Rotate.Y_AXIS;
+
+        double dot = up.dotProduct(target);
+        System.out.printf("target: %f,%f,%f\nDot Product: %f\n", target.getX(),target.getY(),target.getZ(),dot);
+
+        //Parallel/AntiParallel cases
+        if (Math.abs(dot - 1.0) < 1e-3) {
+            System.out.println("Same axis");
+            return;
+        }
+        if (Math.abs(dot + 1.0) < 1e-3) {
+            orientation.setAngle(180);
+            orientation.setAxis(Rotate.X_AXIS);
+            System.out.println("diff axis");
+            if (!getTransforms().contains(orientation)) {
+                getTransforms().add(orientation);
+            }
+            return;
+        }
+
+        Point3D axis = up.crossProduct(target).normalize();
+        double angle = Math.toDegrees(Math.acos(dot));
+
+        orientation.setAxis(axis);
+        orientation.setAngle(angle);
+
+        if (!getTransforms().contains(orientation)) {
+            getTransforms().add(orientation);
+        }
     }
 }
