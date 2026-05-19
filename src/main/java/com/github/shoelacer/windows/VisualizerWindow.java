@@ -13,6 +13,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 import java.util.Optional;
@@ -43,7 +45,7 @@ public class VisualizerWindow {
         root3D = new Group();
 
         Box box = new Box(2, 2, 2);
-        box.setMaterial(new PhongMaterial(Color.RED));
+        box.setMaterial(new PhongMaterial(Color.BLUE));
         root3D.getChildren().add(box);
 
         root3D.getChildren().add(new VectorArrow(Color.BLUE,2,0,0));
@@ -55,10 +57,16 @@ public class VisualizerWindow {
         root3D.getChildren().add(light);
 
         pane3d.setRoot(root3D);
-
-        PerspectiveCamera camera = new PerspectiveCamera(true);
-        camera.setTranslateZ(-15);
-        camera.setFarClip(1000);
+        root3D.getTransforms().add(new Scale(30,30));
+        //root3D.getTransforms().add(new Rotate(30,Rotate.X_AXIS));
+        //root3D.getTransforms().add(new Rotate(30,Rotate.Y_AXIS));
+        //PerspectiveCamera camera = new PerspectiveCamera(false);
+        ParallelCamera camera = new ParallelCamera();
+        camera.setTranslateZ(-10);
+        camera.setTranslateX(-200);
+        camera.setTranslateY(-200);
+        camera.setFarClip(100);
+        camera.setNearClip(0.1);
         pane3d.setCamera(camera);
     }
 
