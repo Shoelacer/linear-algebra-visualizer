@@ -39,9 +39,9 @@
          <children>
             <VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="348.0" prefWidth="159.0" style="-fx-background-color: white;">
                <children>
-                  <ScrollPane id="vectorList" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="315.0" prefWidth="160.0">
+                  <ScrollPane id="vectorList" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="315.0" prefWidth="160.0" VBox.vgrow="NEVER">
                      <content>
-                        <VBox fx:id="vectorList" fillWidth="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="312.0" prefWidth="157.0" />
+                        <VBox fx:id="vectorList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="312.0" prefWidth="157.0" />
                      </content></ScrollPane>
                   <Button mnemonicParsing="false" onAction="#addVector" prefHeight="25.0" prefWidth="157.0" text="Add Vector">
                      <VBox.margin>
