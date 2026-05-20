@@ -42,8 +42,9 @@ public class VisualizerWindow {
 
         Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
         Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
+        Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
 
-        root3D.getTransforms().addAll(rotateX, rotateY);
+        root3D.getTransforms().addAll(rotateX, rotateY, rotateZ);
         double[] mousePosition = new double[2];
 
         pane3d.setOnMousePressed((MouseEvent me) -> {
@@ -56,8 +57,12 @@ public class VisualizerWindow {
             double dy = (mousePosition[1] - me.getSceneY());
 
             if (me.isPrimaryButtonDown()) {
-                rotateX.setAngle(rotateX.getAngle() - dy * SENSITIVITY);
-                rotateY.setAngle(rotateY.getAngle() - dx * SENSITIVITY);
+                if(me.isShiftDown()){
+                    rotateZ.setAngle(rotateZ.getAngle() - dx * SENSITIVITY);
+                }else {
+                    rotateX.setAngle(rotateX.getAngle() - dy * SENSITIVITY);
+                    rotateY.setAngle(rotateY.getAngle() - dx * SENSITIVITY);
+                }
             }
 
             mousePosition[0] = me.getSceneX();
@@ -78,7 +83,7 @@ public class VisualizerWindow {
 
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
-        root3D.getChildren().add(new VectorArrow(Color.RED, 0, 0, 1000));
+        root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
         //root3D.getChildren().add(new VectorArrow(Color.ORANGE, 0, 2, 0));
         //root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, -2, 0));
 
