@@ -5,10 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -24,6 +21,7 @@ public class VisualizerWindow {
     private Group root3D;
 
     @FXML private SubScene pane3d;
+    @FXML private VBox vectorList;
 
     public VisualizerWindow(Stage window) {
         this.window = window;
@@ -105,6 +103,10 @@ public class VisualizerWindow {
         result.ifPresent(text ->{
                 System.out.printf("Adding Vector: (%f, %f, %f)\n", text[0], text[1], text[2]);
                 root3D.getChildren().add(new VectorArrow(Color.BLUE,text[0],text[1],text[2]));
+                Label label = new Label("Vector: ("+text[0]+", "+text[1]+", "+text[2]+")");
+                label.setMinHeight(50);
+                label.setWrapText(true);
+                vectorList.getChildren().add(label);
         }
         );
     }
