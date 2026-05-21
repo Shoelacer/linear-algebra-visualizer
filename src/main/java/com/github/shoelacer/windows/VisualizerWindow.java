@@ -72,10 +72,15 @@ public class VisualizerWindow {
         });
 
         pane3d.setOnScroll(scroll -> {
-            System.out.println(scroll.getDeltaY());
-            rootZoom.setX(rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/100);
-            rootZoom.setY(rootZoom.getY()+scroll.getDeltaY()*SENSITIVITY/100);
-            rootZoom.setZ(rootZoom.getZ()+scroll.getDeltaY()*SENSITIVITY/100);
+            System.out.println(rootZoom.getX());
+            double zoomFactor = rootZoom.getX();
+            zoomFactor = rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/20;
+            zoomFactor = Math.max(zoomFactor, 1.0);
+            zoomFactor = Math.min(zoomFactor, 100);
+
+            rootZoom.setX(zoomFactor);
+            rootZoom.setY(zoomFactor);
+            //rootZoom.setZ(zoomFactor);
             //root3D.setScaleX(root3D.getScaleX() + scroll.getDeltaY() * SENSITIVITY/1000);
             //root3D.setScaleY(root3D.getScaleY() + scroll.getDeltaY() * SENSITIVITY/1000);
         });
@@ -88,24 +93,29 @@ public class VisualizerWindow {
     private void setup3D() {
         root3D = new Group();
 
+        /*Box box = new Box(2, 2, 2);
+        box.setMaterial(new PhongMaterial(Color.BLUE));
+        root3D.getChildren().add(box);*/
+
+
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
         root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
         //root3D.getChildren().add(new VectorArrow(Color.ORANGE, 0, 2, 0));
         //root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, -2, 0));
-
-        Box box = new Box(2, 2, 2);
-        box.setMaterial(new PhongMaterial(Color.BLUE));
-        root3D.getChildren().add(box);
-
-        AmbientLight light = new AmbientLight(Color.rgb(200,200,200,0.4));
+        AmbientLight light = new AmbientLight(Color.rgb(200,200,200,1));
         root3D.getChildren().add(light);
 
-        PointLight pointLight = new PointLight(Color.WHITE);
-        pointLight.setTranslateX(-400);
-        pointLight.setTranslateY(-400);
-        pointLight.setTranslateZ(-10);
-        root3D.getChildren().add(pointLight);
+        /*PointLight pointLight1 = new PointLight(Color.WHITE);
+        pointLight1.setTranslateX(0);
+        pointLight1.setTranslateY(-300);
+        pointLight1.setTranslateZ(-400);*/
+
+        /*PointLight pointLight2 = new PointLight(Color.WHITE);
+        pointLight2.setTranslateX(-20);
+        pointLight2.setTranslateY(-30);
+        pointLight2.setTranslateZ(-20);*/
+        //root3D.getChildren().addAll(pointLight1);
 
         rootZoom = new Scale(25,25,25,0,0,0);
 
@@ -114,12 +124,12 @@ public class VisualizerWindow {
         //root3D.getTransforms().add(new Rotate(30,Rotate.X_AXIS));
         //root3D.getTransforms().add(new Rotate(30,Rotate.Y_AXIS));
         //PerspectiveCamera camera = new PerspectiveCamera(false);
-        ParallelCamera camera = new ParallelCamera();
+        PerspectiveCamera camera = new PerspectiveCamera();
         camera.setTranslateZ(-10);
         camera.setTranslateX(-200);
         camera.setTranslateY(-200);
         camera.setFarClip(100);
-        camera.setNearClip(0.1);
+        camera.setNearClip(0.0001);
         pane3d.setCamera(camera);
     }
 
