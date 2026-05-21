@@ -73,9 +73,11 @@ public class VisualizerWindow {
 
         pane3d.setOnScroll(scroll -> {
             System.out.println(scroll.getDeltaY());
-            root3D.setScaleX(root3D.getScaleX() + scroll.getDeltaY() * SENSITIVITY/1000);
-            root3D.setScaleY(root3D.getScaleY() + scroll.getDeltaY() * SENSITIVITY/1000);
-            //rootZoom = new Scale((Math.pow(2,scroll.getDeltaY())+1)*rootZoom.getX(), (Math.pow(2,scroll.getDeltaY())+1)*rootZoom.getY());
+            rootZoom.setX(rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/100);
+            rootZoom.setY(rootZoom.getY()+scroll.getDeltaY()*SENSITIVITY/100);
+            rootZoom.setZ(rootZoom.getZ()+scroll.getDeltaY()*SENSITIVITY/100);
+            //root3D.setScaleX(root3D.getScaleX() + scroll.getDeltaY() * SENSITIVITY/1000);
+            //root3D.setScaleY(root3D.getScaleY() + scroll.getDeltaY() * SENSITIVITY/1000);
         });
 
         Scene scene = new Scene(root, 600, 400);
@@ -86,15 +88,15 @@ public class VisualizerWindow {
     private void setup3D() {
         root3D = new Group();
 
-        Box box = new Box(2, 2, 2);
-        box.setMaterial(new PhongMaterial(Color.BLUE));
-        root3D.getChildren().add(box);
-
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
         root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
         //root3D.getChildren().add(new VectorArrow(Color.ORANGE, 0, 2, 0));
         //root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, -2, 0));
+
+        Box box = new Box(2, 2, 2);
+        box.setMaterial(new PhongMaterial(Color.BLUE));
+        root3D.getChildren().add(box);
 
         AmbientLight light = new AmbientLight(Color.rgb(200,200,200,0.4));
         root3D.getChildren().add(light);
@@ -105,7 +107,7 @@ public class VisualizerWindow {
         pointLight.setTranslateZ(-10);
         root3D.getChildren().add(pointLight);
 
-        rootZoom = new Scale(30,30);
+        rootZoom = new Scale(25,25,25,0,0,0);
 
         pane3d.setRoot(root3D);
         root3D.getTransforms().add(rootZoom);
