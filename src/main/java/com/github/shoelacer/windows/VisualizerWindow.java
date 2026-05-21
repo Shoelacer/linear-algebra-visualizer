@@ -22,6 +22,8 @@ public class VisualizerWindow {
     private Stage window;
     private Group root3D;
 
+    private Scale rootZoom;
+
     @FXML
     private SubScene pane3d;
     @FXML
@@ -69,6 +71,13 @@ public class VisualizerWindow {
             mousePosition[1] = me.getSceneY();
         });
 
+        pane3d.setOnScroll(scroll -> {
+            System.out.println(scroll.getDeltaY());
+            root3D.setScaleX(root3D.getScaleX() + scroll.getDeltaY() * SENSITIVITY/1000);
+            root3D.setScaleY(root3D.getScaleY() + scroll.getDeltaY() * SENSITIVITY/1000);
+            //rootZoom = new Scale((Math.pow(2,scroll.getDeltaY())+1)*rootZoom.getX(), (Math.pow(2,scroll.getDeltaY())+1)*rootZoom.getY());
+        });
+
         Scene scene = new Scene(root, 600, 400);
         scene.getStylesheets().add(getClass().getResource("../styles/styles.css").toExternalForm());
         return scene;
@@ -96,8 +105,10 @@ public class VisualizerWindow {
         pointLight.setTranslateZ(-10);
         root3D.getChildren().add(pointLight);
 
+        rootZoom = new Scale(30,30);
+
         pane3d.setRoot(root3D);
-        root3D.getTransforms().add(new Scale(30, 30));
+        root3D.getTransforms().add(rootZoom);
         //root3D.getTransforms().add(new Rotate(30,Rotate.X_AXIS));
         //root3D.getTransforms().add(new Rotate(30,Rotate.Y_AXIS));
         //PerspectiveCamera camera = new PerspectiveCamera(false);
