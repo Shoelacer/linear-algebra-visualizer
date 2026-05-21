@@ -10,7 +10,21 @@ import javafx.scene.transform.Rotate;
 
 public class VectorArrow extends Group {
 
+    private Color color;
+    private double x;
+    private double y;
+    private double z;
+
     public VectorArrow(Color color, double x, double y, double z) {
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        createArrow();
+    }
+
+    public void createArrow(){
+        getTransforms().clear();
         double length = Math.sqrt(x*x + y*y + z*z);
         if (length < 0.01) return;
 
@@ -29,8 +43,8 @@ public class VectorArrow extends Group {
         rotateTo(x, y, z);
     }
 
-
     private void rotateTo(double x, double y, double z) {
+
         Rotate orientation = new Rotate();
         Point3D target = new Point3D(x, y, z).normalize();
         Point3D up = Rotate.Y_AXIS;
@@ -63,4 +77,13 @@ public class VectorArrow extends Group {
             getTransforms().add(orientation);
         }
     }
+
+    public void updateCoordinates(double x, double y, double z){
+        getChildren().clear();
+        this.x=x;
+        this.y=y;
+        this.z=z;
+        createArrow();
+    }
+
 }

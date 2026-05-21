@@ -1,6 +1,7 @@
 package com.github.shoelacer.windows;
 
 import com.github.shoelacer.geometry.VectorArrow;
+import com.github.shoelacer.visuals.DisplayItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -93,37 +94,17 @@ public class VisualizerWindow {
     private void setup3D() {
         root3D = new Group();
 
-        /*Box box = new Box(2, 2, 2);
-        box.setMaterial(new PhongMaterial(Color.BLUE));
-        root3D.getChildren().add(box);*/
-
 
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
         root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
-        //root3D.getChildren().add(new VectorArrow(Color.ORANGE, 0, 2, 0));
-        //root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, -2, 0));
         AmbientLight light = new AmbientLight(Color.rgb(200,200,200,1));
         root3D.getChildren().add(light);
-
-        /*PointLight pointLight1 = new PointLight(Color.WHITE);
-        pointLight1.setTranslateX(0);
-        pointLight1.setTranslateY(-300);
-        pointLight1.setTranslateZ(-400);*/
-
-        /*PointLight pointLight2 = new PointLight(Color.WHITE);
-        pointLight2.setTranslateX(-20);
-        pointLight2.setTranslateY(-30);
-        pointLight2.setTranslateZ(-20);*/
-        //root3D.getChildren().addAll(pointLight1);
-
         rootZoom = new Scale(25,25,25,0,0,0);
 
         pane3d.setRoot(root3D);
         root3D.getTransforms().add(rootZoom);
-        //root3D.getTransforms().add(new Rotate(30,Rotate.X_AXIS));
-        //root3D.getTransforms().add(new Rotate(30,Rotate.Y_AXIS));
-        //PerspectiveCamera camera = new PerspectiveCamera(false);
+
         PerspectiveCamera camera = new PerspectiveCamera();
         camera.setTranslateZ(-10);
         camera.setTranslateX(-200);
@@ -168,11 +149,19 @@ public class VisualizerWindow {
         Optional<Double[]> result = dialog.showAndWait();
         result.ifPresent(text -> {
                     System.out.printf("Adding Vector: (%f, %f, %f)\n", text[0], text[1], text[2]);
-                    root3D.getChildren().add(new VectorArrow(Color.BLUE, text[0], text[1], text[2]));
+
+            DisplayItem arrow = new DisplayItem(text[0],text[1],text[2],Color.BLUE);
+            root3D.getChildren().add(arrow.getArrow());
+            vectorList.getChildren().add(arrow.getLabel());
+
+            /*root3D.getChildren().add(new VectorArrow(Color.BLUE, text[0], text[1], text[2]));
                     Label label = new Label("Vector: (" + text[0] + ", " + text[1] + ", " + text[2] + ")");
                     label.setMinHeight(50);
                     label.setWrapText(true);
-                    vectorList.getChildren().add(label);
+                    vectorList.getChildren().add(label);*/
+
+
+
                 }
         );
     }
