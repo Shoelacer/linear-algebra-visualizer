@@ -10,11 +10,32 @@ import java.util.Optional;
 public class DisplayItem {
     private VectorArrow arrow;
     private Label text;
+    private ContextMenu contextMenu;
 
     public DisplayItem(double x, double y, double z, Color color) {
         this.arrow = new VectorArrow(color, x, y, z);
         text = new Label("X: " + x + " Y: " + y + " Z: " + z);
-        text.setOnMouseClicked(event -> {
+
+        MenuItem hideVector = new MenuItem("Hide Vector");
+        MenuItem showVector = new MenuItem("Show Vector");
+        MenuItem editVector = new MenuItem("Edit Vector");
+        contextMenu = new ContextMenu();
+        contextMenu.getItems().addAll(hideVector, editVector);
+        text.setContextMenu(contextMenu);
+
+        hideVector.setOnAction(e -> {
+            arrow.setVisible(false);
+            contextMenu.getItems().remove(hideVector);
+            contextMenu.getItems().addFirst(showVector);
+        });
+
+        showVector.setOnAction(e -> {
+            arrow.setVisible(true);
+            contextMenu.getItems().addFirst(hideVector);
+            contextMenu.getItems().remove(showVector);
+        });
+
+        editVector.setOnAction(event -> {
 
             Dialog<Double[]> dialog = new Dialog<>();
             dialog.setTitle("Edit Vector");
@@ -52,7 +73,7 @@ public class DisplayItem {
     }
     public void setComponents(double x, double y, double z) {
         arrow.updateCoordinates(x, y, z);
-        text.setText("Vector: (" + x + ", " + y + ", " + z + ")");
+        text.setText("(" + x + ", " + y + ", " + z + ")");
     }
 
     public VectorArrow getArrow() { return arrow; }
