@@ -14,7 +14,7 @@ public class DisplayItem {
 
     public DisplayItem(double x, double y, double z, Color color) {
         this.arrow = new VectorArrow(color, x, y, z);
-        text = new Label("X: " + x + " Y: " + y + " Z: " + z);
+        text = new Label("(" + x + ", " + y + ", " + z+")");
 
         MenuItem hideVector = new MenuItem("Hide Vector");
         MenuItem showVector = new MenuItem("Show Vector");
@@ -75,6 +75,8 @@ public class DisplayItem {
         arrow.updateCoordinates(x, y, z);
         text.setText("(" + x + ", " + y + ", " + z + ")");
     }
+
+
 
     public VectorArrow getArrow() { return arrow; }
     public Label getLabel() { return text; }

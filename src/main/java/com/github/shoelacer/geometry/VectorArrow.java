@@ -1,5 +1,6 @@
 package com.github.shoelacer.geometry;
 
+import com.github.shoelacer.math.Vector3D;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -84,6 +85,10 @@ public class VectorArrow extends Group {
         this.y=y;
         this.z=z;
         createArrow();
+    }
+
+    public Vector3D getVector(){
+        return new Vector3D(x, y, z);
     }
 
 }

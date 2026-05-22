@@ -7,7 +7,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -15,7 +17,6 @@ import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.util.Optional;
 
@@ -24,6 +25,8 @@ public class VisualizerWindow {
     private Group root3D;
 
     private Scale rootZoom;
+
+    private DisplayItem[] lastClicked = new DisplayItem[2];
 
     @FXML
     private SubScene pane3d;
@@ -78,12 +81,8 @@ public class VisualizerWindow {
             zoomFactor = rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/20;
             zoomFactor = Math.max(zoomFactor, 1.0);
             zoomFactor = Math.min(zoomFactor, 100);
-
             rootZoom.setX(zoomFactor);
             rootZoom.setY(zoomFactor);
-            //rootZoom.setZ(zoomFactor);
-            //root3D.setScaleX(root3D.getScaleX() + scroll.getDeltaY() * SENSITIVITY/1000);
-            //root3D.setScaleY(root3D.getScaleY() + scroll.getDeltaY() * SENSITIVITY/1000);
         });
 
         Scene scene = new Scene(root, 600, 400);
@@ -120,6 +119,7 @@ public class VisualizerWindow {
         window.setScene(startWindow.getPane());
     }
 
+    //Called by the Add Vector button in FXML
     public void addVector(ActionEvent event) throws Exception {
         Dialog<Double[]> dialog = new Dialog<>();
         dialog.setTitle("Add Vector");
@@ -148,21 +148,38 @@ public class VisualizerWindow {
 
         Optional<Double[]> result = dialog.showAndWait();
         result.ifPresent(text -> {
-                    System.out.printf("Adding Vector: (%f, %f, %f)\n", text[0], text[1], text[2]);
+                System.out.printf("Adding Vector: (%f, %f, %f)\n", text[0], text[1], text[2]);
+                DisplayItem arrow = new DisplayItem(text[0],text[1],text[2],Color.BLUE);
+                root3D.getChildren().add(arrow.getArrow());
+                vectorList.getChildren().add(arrow.getLabel());
 
-            DisplayItem arrow = new DisplayItem(text[0],text[1],text[2],Color.BLUE);
-            root3D.getChildren().add(arrow.getArrow());
-            vectorList.getChildren().add(arrow.getLabel());
-
-            /*root3D.getChildren().add(new VectorArrow(Color.BLUE, text[0], text[1], text[2]));
-                    Label label = new Label("Vector: (" + text[0] + ", " + text[1] + ", " + text[2] + ")");
-                    label.setMinHeight(50);
-                    label.setWrapText(true);
-                    vectorList.getChildren().add(label);*/
-
-
-
-                }
+                arrow.getLabel().setOnMouseClicked(mouseEvent -> {
+                    if(mouseEvent.getButton() == MouseButton.PRIMARY){
+                        if(lastClicked[1]!=null)lastClicked[1].getLabel().setBackground(Background.EMPTY);
+                        lastClicked[1]=lastClicked[0];
+                        lastClicked[0]=arrow;
+                        lastClicked[0].getLabel().setBackground(Background.fill(Color.rgb(0,0,255,0.05)));
+                    }
+                });
+            }
         );
+    }
+
+    public void dotProduct(ActionEvent event) throws Exception {
+        if(lastClicked[1]==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Must select 2 vectors");
+            alert.setContentText("Please select 2 vectors to display the dot product");
+            alert.showAndWait();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Dot Product");
+            alert.setHeaderText("Dot Product");
+            alert.setContentText("Dot product of "+lastClicked[0].getLabel().getText()
+                    + " and "+lastClicked[1].getLabel().getText()+" is "
+                    +lastClicked[0].getArrow().getVector().dot(lastClicked[1].getArrow().getVector()));
+            alert.showAndWait();
+        }
+
     }
 }
