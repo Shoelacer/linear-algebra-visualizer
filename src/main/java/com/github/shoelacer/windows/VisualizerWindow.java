@@ -1,6 +1,7 @@
 package com.github.shoelacer.windows;
 
 import com.github.shoelacer.geometry.VectorArrow;
+import com.github.shoelacer.math.Vector3D;
 import com.github.shoelacer.visuals.DisplayItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -159,30 +160,32 @@ public class VisualizerWindow {
 
         Optional<Double[]> result = dialog.showAndWait();
         result.ifPresent(text -> {
-                System.out.printf("Adding Vector: (%f, %f, %f)\n", text[0], text[1], text[2]);
-                DisplayItem arrow = new DisplayItem(text[0],text[1],text[2],Color.BLUE);
-                root3D.getChildren().add(arrow.getArrow());
-                vectorList.getChildren().add(arrow.getLabel());
-
-                arrow.getLabel().setOnMouseClicked(mouseEvent -> {
-                    if(mouseEvent.getButton() == MouseButton.PRIMARY){
-
-                        if(clickedItems.contains(arrow)){
-                            clickedItems.remove(arrow);
-                            arrow.getLabel().setBackground(Background.EMPTY);
-                        }else{
-                            clickedItems.add(arrow);
-                            arrow.getLabel().setBackground(Background.fill(Color.rgb(0,0,255,0.05)));
-                        }
-                        /*
-                        if(lastClicked[1]!=null)lastClicked[1].getLabel().setBackground(Background.EMPTY);
-                        lastClicked[1]=lastClicked[0];
-                        lastClicked[0]=arrow;
-                        lastClicked[0].getLabel().setBackground(Background.fill(Color.rgb(0,0,255,0.05)));*/
-                    }
-                });
+                addVectorToPane(text[0],text[1],text[2],Color.BLUE);
             }
         );
+    }
+
+    public void addVectorToPane(double x, double y, double z, Color color) {
+
+        System.out.printf("Adding Vector: (%f, %f, %f)\n", x, y, z);
+        DisplayItem arrow = new DisplayItem(x,y,z,color);
+        root3D.getChildren().add(arrow.getArrow());
+        vectorList.getChildren().add(arrow.getLabel());
+        arrow.getLabel().setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.PRIMARY){
+
+                if(clickedItems.contains(arrow)){
+                    clickedItems.remove(arrow);
+                    arrow.getLabel().setBackground(Background.EMPTY);
+                }else{
+                    clickedItems.add(arrow);
+                    arrow.getLabel().setBackground(Background.fill(Color.rgb(0,0,255,0.05)));
+                }
+            }
+        });
+    }
+    public void addVectorToPane(Vector3D vector, Color color) {
+        addVectorToPane(vector.getX(), vector.getY(), vector.getZ(), color);
     }
 
     public void dotProduct(ActionEvent event) throws Exception {
@@ -214,7 +217,14 @@ public class VisualizerWindow {
             alert.getDialogPane().setContent(new Label("Cross product of "+clickedItems.get(0).getLabel().getText()
                     + " and "+clickedItems.get(1).getLabel().getText()+" is "
                     +clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector())));
-            alert.showAndWait();
+
+            ButtonType addButton = new ButtonType("Add Vector");
+
+            alert.getButtonTypes().add(addButton);
+            Optional<ButtonType> selected = alert.showAndWait();
+            if(selected.isPresent()&&selected.get()==(addButton)){
+                addVectorToPane(clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector()),Color.BLUE);
+            }
         }
     }
 }
