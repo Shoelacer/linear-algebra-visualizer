@@ -36,7 +36,7 @@ public class Matrix {
     public static Matrix identity(int size){
         double[][] matrix = new double[size][size];
         for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++) matrix[i][j] = 1;
+            matrix[i][i] = 1;
         }
         return new Matrix(matrix);
     }
@@ -63,7 +63,6 @@ public class Matrix {
         if(this.matrix == null) throw new NullPointerException("Cannot multiply null matrix");
         if(this.matrix[0].length!=3||this.matrix.length!=3)throw new IllegalArgumentException("Invalid matrix dimensions");
         Vector3D result = new Vector3D(0,0,0);
-        System.out.println(new Vector3D(matrix[0][0],matrix[1][0],matrix[2][0]).scale(vector3D.getX()));
         result = result.add(new Vector3D(matrix[0][0],matrix[1][0],matrix[2][0]).scale(vector3D.getX()));
         result = result.add(new Vector3D(matrix[0][1],matrix[1][1],matrix[2][1]).scale(vector3D.getY()));
         result = result.add(new Vector3D(matrix[0][2],matrix[1][2],matrix[2][2]).scale(vector3D.getZ()));
@@ -82,9 +81,13 @@ public class Matrix {
     }
 
     public double getCell(int i, int j){
+        if(i>this.matrix.length)throw new ArrayIndexOutOfBoundsException("Cannot row "+i+" of matrix with "+this.matrix.length+" rows");
+        if(j>this.matrix[0].length)throw new ArrayIndexOutOfBoundsException("Cannot col "+j+" of matrix with "+this.matrix[0].length+" rows");
         return this.matrix[i][j];
     }
     public void setCell(int i, int j, double value){
+        if(i>this.matrix.length)throw new ArrayIndexOutOfBoundsException("Cannot row "+i+" of matrix with "+this.matrix.length+" rows");
+        if(j>this.matrix[0].length)throw new ArrayIndexOutOfBoundsException("Cannot col "+j+" of matrix with "+this.matrix[0].length+" rows");
         this.matrix[i][j] = value;
     }
 
