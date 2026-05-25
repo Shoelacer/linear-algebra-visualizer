@@ -71,7 +71,7 @@ public class Vector3D {
 
     // Utility
     public boolean equals(Vector3D v){
-        return  this.x == v.x && this.y == v.y && this.z == v.z;
+        return  (Math.abs(this.x - v.x)<.0000001) && (Math.abs(this.y - v.y)<.0000001) &&(Math.abs(this.z - v.z)<.0000001) ;
     }
     public String toString(){
         return "[" + this.x + ", " + this.y + ", " + this.z+"]";
