@@ -63,9 +63,10 @@ public class Matrix {
         if(this.matrix == null) throw new NullPointerException("Cannot multiply null matrix");
         if(this.matrix[0].length!=3||this.matrix.length!=3)throw new IllegalArgumentException("Invalid matrix dimensions");
         Vector3D result = new Vector3D(0,0,0);
-        result.add(new Vector3D(matrix[0][0],matrix[1][0],matrix[2][0]).scale(vector3D.getX()));
-        result.add(new Vector3D(matrix[0][1],matrix[1][1],matrix[2][1]).scale(vector3D.getY()));
-        result.add(new Vector3D(matrix[0][2],matrix[1][2],matrix[2][2]).scale(vector3D.getZ()));
+        System.out.println(new Vector3D(matrix[0][0],matrix[1][0],matrix[2][0]).scale(vector3D.getX()));
+        result = result.add(new Vector3D(matrix[0][0],matrix[1][0],matrix[2][0]).scale(vector3D.getX()));
+        result = result.add(new Vector3D(matrix[0][1],matrix[1][1],matrix[2][1]).scale(vector3D.getY()));
+        result = result.add(new Vector3D(matrix[0][2],matrix[1][2],matrix[2][2]).scale(vector3D.getZ()));
         return result;
     }
 
@@ -85,5 +86,16 @@ public class Matrix {
     }
     public void setCell(int i, int j, double value){
         this.matrix[i][j] = value;
+    }
+
+    public String toString(){
+        String result = "";
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                result += this.matrix[i][j] + " ";
+            }
+            result += "\n";
+        }
+        return result;
     }
 }

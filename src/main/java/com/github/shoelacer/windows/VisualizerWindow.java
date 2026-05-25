@@ -29,13 +29,6 @@ public class VisualizerWindow {
     private Scale rootZoom;
 
 
-    /*
-    * TODO:
-    *  Replace lastClicked with an ArrayList or a HashMap or smth that lets me see if its clicked
-    *  Probably an ArrayList since that lets me check the size easily
-    *  Order does matter so a set won't work
-    *
-    * */
 
     private DisplayItem[] lastClicked = new DisplayItem[2];
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();

@@ -18,9 +18,14 @@ import javafx.stage.Stage;
 import java.util.Scanner;
 
 public class Launch extends Application {
-
     public static void main(String[] args) {
-        launch(args);
+        try {
+            launch(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Press Enter to exit...");
+            try { System.in.read(); } catch (Exception ex) {}
+        }
     }
     @Override
     public void start(Stage window) throws Exception {

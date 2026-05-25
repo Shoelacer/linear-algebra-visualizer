@@ -18,12 +18,19 @@ public class Vector3D {
     }
 
     // Basic operations
+
+    /** Returns a NEW VECTOR that is the sum of the given vectors
+     */
     public Vector3D add(Vector3D v){
         return new Vector3D(x + v.x, y + v.y, z + v.z);
     }
+    /** Returns a NEW VECTOR that is the difference of the given vectors
+     */
     public Vector3D subtract(Vector3D v){
         return new Vector3D(x - v.x, y - v.y, z - v.z);
     }
+    /** Returns a NEW SCALED VECTOR
+     */
     public Vector3D scale(double scalar){
         return new Vector3D(x * scalar, y * scalar, z * scalar);
     }
