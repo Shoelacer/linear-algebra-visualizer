@@ -38,6 +38,11 @@ public class VisualizerWindow {
     @FXML
     private VBox vectorList;
 
+
+    private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
+    private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
+    private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+
     final double SENSITIVITY = 1.0;
 
     public VisualizerWindow(Stage window) {
@@ -51,9 +56,6 @@ public class VisualizerWindow {
 
         setup3D();
 
-        Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-        Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
-        Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
 
         root3D.getTransforms().addAll(rotateX, rotateY, rotateZ);
         double[] mousePosition = new double[2];
@@ -219,5 +221,12 @@ public class VisualizerWindow {
                 addVectorToPane(clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector()),Color.BLUE);
             }
         }
+    }
+    public void resetView(ActionEvent event) throws Exception {
+        rotateX.setAngle(0);
+        rotateY.setAngle(0);
+        rotateZ.setAngle(0);
+        rootZoom.setX(25);
+        rootZoom.setY(25);
     }
 }
