@@ -8,14 +8,6 @@ package com.github.shoelacer.math;
     double determinant();
     Matrix inverse();  // maybe do PA=LU decomp as well?
 
-    static Matrix rotation2D(double angle);
-    static Matrix scale2D(double sx, double sy);
-
-    static Matrix rotationX(double angle);
-    static Matrix rotationY(double angle);
-    static Matrix rotationZ(double angle);
-    static Matrix scale3D(double sx, double sy, double sz);
-
  *
  *
  */
@@ -78,6 +70,57 @@ public class Matrix {
             }
         }
         return result;
+    }
+
+    public static Matrix rotation2D(double angle){
+        Matrix matrix = new Matrix(2,2);
+        matrix.matrix[0][0] = Math.cos(angle);
+        matrix.matrix[1][1] = Math.cos(angle);
+        matrix.matrix[1][0] = Math.sin(angle);
+        matrix.matrix[0][1] = -1*Math.sin(angle);
+        return matrix;
+    }
+
+    public static Matrix rotationX(double angle){
+        Matrix matrix = identity(3);
+        matrix.matrix[1][1] = Math.cos(angle);
+        matrix.matrix[2][2] = Math.cos(angle);
+        matrix.matrix[2][1] = Math.sin(angle);
+        matrix.matrix[1][2] = -1*Math.sin(angle);
+        return matrix;
+    }
+
+    public static Matrix rotationY(double angle){
+        Matrix matrix = identity(3);
+        matrix.matrix[0][0] = Math.cos(angle);
+        matrix.matrix[2][2] = Math.cos(angle);
+        matrix.matrix[0][2] = Math.sin(angle);
+        matrix.matrix[2][0] = -1*Math.sin(angle);
+        return matrix;
+    }
+
+    public static Matrix rotationZ(double angle){
+        Matrix matrix = identity(3);
+        matrix.matrix[0][0] = Math.cos(angle);
+        matrix.matrix[1][1] = Math.cos(angle);
+        matrix.matrix[1][0] = Math.sin(angle);
+        matrix.matrix[0][1] = -1*Math.sin(angle);
+        return matrix;
+    }
+
+    public static Matrix scale2D(double sx, double sy){
+        Matrix matrix = identity(2);
+        matrix.setCell(0, 0, sx);
+        matrix.setCell(1, 1, sy);
+        return matrix;
+    }
+
+    public static Matrix scale3D(double sx,  double sy, double sz){
+        Matrix matrix = identity(3);
+        matrix.setCell(0, 0, sx);
+        matrix.setCell(1, 1, sy);
+        matrix.setCell(2, 2, sz);
+        return matrix;
     }
 
     public double getCell(int i, int j){
