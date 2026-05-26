@@ -61,6 +61,16 @@ public class Matrix {
         return result;
     }
 
+    public double determinant(){
+        if(this.matrix == null) throw new NullPointerException("Cannot compute determinant of null matrix");
+        if(this.matrix.length!=3 || this.matrix[0].length!=3)throw new IllegalArgumentException("Determinant only supported for 3x3 matrices");
+        double det = 0;
+        det+=this.matrix[0][0]*(this.matrix[1][1]*this.matrix[2][2]-this.matrix[1][2]*this.matrix[2][1]);
+        det-=this.matrix[0][1]*(this.matrix[1][0]*this.matrix[2][2]-this.matrix[1][2]*this.matrix[2][0]);
+        det+=this.matrix[0][2]*(this.matrix[1][0]*this.matrix[2][1]-this.matrix[1][1]*this.matrix[2][0]);
+        return det;
+    }
+
     public static Matrix transpose(Matrix matrix){
         if(matrix == null) throw new NullPointerException("Cannot transpose null matrix");
         Matrix result = new Matrix(matrix.matrix[0].length, matrix.matrix.length);
