@@ -22,15 +22,21 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Optional;
 
+
+/*
+TODO
+ *   Implement rotations by a certain axis
+ *   Add more matrix functionality to the actual application?
+ *
+ *
+ *
+*/
+
 public class VisualizerWindow {
     private Stage window;
     private Group root3D;
 
     private Scale rootZoom;
-
-
-
-    private DisplayItem[] lastClicked = new DisplayItem[2];
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
 
     @FXML

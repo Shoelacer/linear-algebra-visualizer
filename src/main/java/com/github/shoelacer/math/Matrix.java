@@ -1,16 +1,6 @@
 package com.github.shoelacer.math;
 
-/* TODO */
-/*
- *
- *
 
-    double determinant();
-    Matrix inverse();  // maybe do PA=LU decomp as well?
-
- *
- *
- */
 
 public class Matrix {
 
