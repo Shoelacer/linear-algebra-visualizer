@@ -1,6 +1,8 @@
 package com.github.shoelacer.math;
 
 
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Matrix {
 
@@ -16,6 +18,7 @@ public class Matrix {
         this.matrix = matrix.matrix;
     }
     public static Matrix identity(int size){
+        if(size<1) throw new IllegalArgumentException("Matrix size must be greater than 0");
         double[][] matrix = new double[size][size];
         for(int i = 0; i < size; i++){
             matrix[i][i] = 1;
@@ -143,5 +146,17 @@ public class Matrix {
             result += "\n";
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Matrix matrix1 = (Matrix) o;
+        return Objects.deepEquals(matrix, matrix1.matrix);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(matrix);
     }
 }

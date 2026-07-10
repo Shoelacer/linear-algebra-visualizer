@@ -70,9 +70,15 @@ public class Vector3D {
 
 
     // Utility
-    public boolean equals(Vector3D v){
-        return  (Math.abs(this.x - v.x)<.0000001) && (Math.abs(this.y - v.y)<.0000001) &&(Math.abs(this.z - v.z)<.0000001) ;
-    }
+
+
+    public boolean equals(Object o){
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector3D v = (Vector3D) o;
+        return (Math.abs(this.x - v.x) < 0.0000001) &&
+                (Math.abs(this.y - v.y) < 0.0000001) &&
+                (Math.abs(this.z - v.z) < 0.0000001);       }
     public String toString(){
         return "[" + this.x + ", " + this.y + ", " + this.z+"]";
     }
