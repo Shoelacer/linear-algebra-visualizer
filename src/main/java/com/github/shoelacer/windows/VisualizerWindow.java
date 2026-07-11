@@ -24,9 +24,12 @@ import java.util.Optional;
 
 
 public class VisualizerWindow {
+    private static final double INITIAL_CAMERA_DISTANCE = 80;
+    final static double SENSITIVITY = 1.0;
+    final static double OFFSET = 0;
+
     private Stage window;
     private Group root3D;
-    private Scale rootZoom;
     @FXML
     private SubScene pane3d;
     @FXML
@@ -42,7 +45,6 @@ public class VisualizerWindow {
 
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
 
-    final double SENSITIVITY = 1.0;
 
     public VisualizerWindow(Stage window) {
         this.window = window;
@@ -71,18 +73,7 @@ public class VisualizerWindow {
             yaw+=dx/(SENSITIVITY*100);
             pitch+=dy/(SENSITIVITY*100);
 
-            camera.setTranslateX(Math.sin(yaw)*cameraDistance-200);
-            camera.setTranslateY(-1*Math.sin(pitch)*cameraDistance-200);
-            camera.setTranslateZ(Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
-
-            rotateZ.setAngle(Math.toDegrees(pitch));
-            rotateY.setAngle(Math.toDegrees(yaw));
-
-            System.out.printf("Camera Y: %f\nCamera Z: %f\nYaw: %f\nPitch: %f\n",
-                    Math.sin(pitch)*cameraDistance+200,
-                    Math.cos(pitch)*cameraDistance,
-                    yaw,
-                    pitch);
+            positionCamera();
 
             mousePosition[0] = me.getSceneX();
             mousePosition[1] = me.getSceneY();
@@ -90,8 +81,9 @@ public class VisualizerWindow {
 
         pane3d.setOnScroll(scroll -> {
             cameraDistance+=scroll.getDeltaY()*SENSITIVITY/5;
-            camera.setTranslateZ(cameraDistance);
+            //camera.setTranslateZ(cameraDistance);
 
+            positionCamera();
         });
 
         Scene scene = new Scene(root, 600, 400);
@@ -99,11 +91,20 @@ public class VisualizerWindow {
         return scene;
     }
 
+    private void positionCamera() {
+        camera.setTranslateX(-1*Math.sin(yaw)*cameraDistance+OFFSET);
+        camera.setTranslateY(-1*Math.sin(pitch)*cameraDistance+OFFSET);
+        camera.setTranslateZ(-1*Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
+
+        rotateX.setAngle(-1*Math.toDegrees(pitch));
+        rotateY.setAngle(Math.toDegrees(yaw));
+    }
+
     private void setup3D() {
         root3D = new Group();
-        cameraDistance = 300;
+        cameraDistance = INITIAL_CAMERA_DISTANCE;
 
-        Box box = new Box(30,30,30);
+        Box box = new Box(20,20,20);
         box.setMaterial(new PhongMaterial(Color.rgb(0, 0, 0,0.5)));
         box.setTranslateX(0);
         box.setTranslateY(0);
@@ -116,7 +117,6 @@ public class VisualizerWindow {
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 0, 0, 1000));
         AmbientLight light = new AmbientLight(Color.rgb(200,200,200,1));
         root3D.getChildren().add(light);
-        rootZoom = new Scale(25,25,25,0,0,0);
 
         root3D.setTranslateX(0);
         root3D.setTranslateY(0);
@@ -129,12 +129,12 @@ public class VisualizerWindow {
         root3D.getChildren().add(pointLight);
 
         pane3d.setRoot(root3D);
-        root3D.getTransforms().add(rootZoom);
+        //root3D.getTransforms().add(rootZoom);
 
-        camera = new PerspectiveCamera();
+        camera = new PerspectiveCamera(true);
         camera.setTranslateZ(-1*cameraDistance);
-        camera.setTranslateX(-200);
-        camera.setTranslateY(-200);
+        camera.setTranslateX(OFFSET);
+        camera.setTranslateY(OFFSET);
         camera.setFarClip(1000);
         camera.setNearClip(0.01);
         pane3d.setCamera(camera);
@@ -243,18 +243,10 @@ public class VisualizerWindow {
         }
     }
     public void resetView(ActionEvent event) throws Exception {
-        rotateX.setAngle(0);
-        rotateY.setAngle(0);
-        rotateZ.setAngle(0);
-
         yaw=0;
         pitch=0;
+        cameraDistance=INITIAL_CAMERA_DISTANCE;
 
-        camera.setTranslateX(Math.sin(yaw)*cameraDistance);
-        camera.setTranslateY(Math.sin(pitch)*cameraDistance);
-        camera.setTranslateZ(Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
-
-        rootZoom.setX(25);
-        rootZoom.setY(25);
+        positionCamera();
     }
 }
