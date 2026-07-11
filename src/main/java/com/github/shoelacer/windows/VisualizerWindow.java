@@ -26,16 +26,11 @@ import java.util.Optional;
 public class VisualizerWindow {
     private Stage window;
     private Group root3D;
-
     private Scale rootZoom;
-    private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
-
     @FXML
     private SubScene pane3d;
     @FXML
     private VBox vectorList;
-
-
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
@@ -44,6 +39,8 @@ public class VisualizerWindow {
 
     private double pitch = 0;
     private double yaw = 0;
+
+    private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
 
     final double SENSITIVITY = 1.0;
 
@@ -72,17 +69,17 @@ public class VisualizerWindow {
             double dy = (mousePosition[1] - me.getSceneY());
 
             yaw+=dx/(SENSITIVITY*100);
-            pitch-=dy/(SENSITIVITY*100);
+            pitch+=dy/(SENSITIVITY*100);
 
-            camera.setTranslateX(Math.sin(yaw)*cameraDistance);
-            camera.setTranslateY(Math.sin(pitch)*cameraDistance);
+            camera.setTranslateX(Math.sin(yaw)*cameraDistance-200);
+            camera.setTranslateY(-1*Math.sin(pitch)*cameraDistance-200);
             camera.setTranslateZ(Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
 
-            rotateX.setAngle(Math.toDegrees(pitch));
+            rotateZ.setAngle(Math.toDegrees(pitch));
             rotateY.setAngle(Math.toDegrees(yaw));
 
             System.out.printf("Camera Y: %f\nCamera Z: %f\nYaw: %f\nPitch: %f\n",
-                    Math.sin(pitch)*cameraDistance,
+                    Math.sin(pitch)*cameraDistance+200,
                     Math.cos(pitch)*cameraDistance,
                     yaw,
                     pitch);
@@ -104,19 +101,30 @@ public class VisualizerWindow {
 
     private void setup3D() {
         root3D = new Group();
+        cameraDistance = 300;
 
-        cameraDistance = 20;
-        root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
-        root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
-        root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
+        Box box = new Box(30,30,30);
+        box.setMaterial(new PhongMaterial(Color.rgb(0, 0, 0,0.5)));
+        box.setTranslateX(0);
+        box.setTranslateY(0);
+        box.setTranslateZ(0);
+
+        root3D.getChildren().add(box);
+
+        root3D.getChildren().add(new VectorArrow(Color.RED, 1000, 0, 0));
+        root3D.getChildren().add(new VectorArrow(Color.GREEN, 0, 1000, 0));
+        root3D.getChildren().add(new VectorArrow(Color.BLUE, 0, 0, 1000));
         AmbientLight light = new AmbientLight(Color.rgb(200,200,200,1));
         root3D.getChildren().add(light);
         rootZoom = new Scale(25,25,25,0,0,0);
 
+        root3D.setTranslateX(0);
+        root3D.setTranslateY(0);
+
         PointLight pointLight = new PointLight(Color.WHITE);
-        pointLight.setTranslateX(-500);
-        pointLight.setTranslateY(-500);
-        pointLight.setTranslateZ(-500);
+        pointLight.setTranslateX(-50);
+        pointLight.setTranslateY(-50);
+        pointLight.setTranslateZ(50);
 
         root3D.getChildren().add(pointLight);
 
@@ -125,10 +133,10 @@ public class VisualizerWindow {
 
         camera = new PerspectiveCamera();
         camera.setTranslateZ(-1*cameraDistance);
-        camera.setTranslateX(0);
-        camera.setTranslateY(0);
-        camera.setFarClip(100);
-        camera.setNearClip(0.0001);
+        camera.setTranslateX(-200);
+        camera.setTranslateY(-200);
+        camera.setFarClip(1000);
+        camera.setNearClip(0.01);
         pane3d.setCamera(camera);
     }
 
