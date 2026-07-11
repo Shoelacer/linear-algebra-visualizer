@@ -59,7 +59,7 @@ public class VisualizerWindow {
         setup3D();
 
 
-        camera.getTransforms().addAll(rotateX, rotateY, rotateZ);
+        camera.getTransforms().addAll(rotateX, rotateY);
         double[] mousePosition = new double[2];
 
         pane3d.setOnMousePressed((MouseEvent me) -> {
@@ -71,30 +71,18 @@ public class VisualizerWindow {
             double dx = (mousePosition[0] - me.getSceneX());
             double dy = (mousePosition[1] - me.getSceneY());
 
-            /*if (me.isPrimaryButtonDown()) {
-                if(me.isShiftDown()){
-                    rotateZ.setAngle(rotateZ.getAngle() - dx * SENSITIVITY);
-                }else {
-                    rotateX.setAngle(rotateX.getAngle() - dy * SENSITIVITY);
-                    rotateY.setAngle(rotateY.getAngle() - dx * SENSITIVITY);
-                }
-            }*/
-            yaw+=dx/(SENSITIVITY*10);
-            pitch+=dy/(SENSITIVITY*10);
+            yaw+=dx/(SENSITIVITY*100);
+            pitch-=dy/(SENSITIVITY*100);
 
-            camera.setTranslateX(Math.sin(yaw)*cameraDistance-200);
-            camera.setTranslateY(Math.sin(pitch)*cameraDistance-200);
-            camera.setTranslateZ(Math.cos(pitch)*cameraDistance);
+            camera.setTranslateX(Math.sin(yaw)*cameraDistance);
+            camera.setTranslateY(Math.sin(pitch)*cameraDistance);
+            camera.setTranslateZ(Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
 
-
-            System.out.println(Math.sin(pitch)*cameraDistance-200);
-            System.out.println(Math.cos(pitch)*cameraDistance);
-
-            rotateX.setAngle(pitch);
-            rotateY.setAngle(yaw);
+            rotateX.setAngle(Math.toDegrees(pitch));
+            rotateY.setAngle(Math.toDegrees(yaw));
 
             System.out.printf("Camera Y: %f\nCamera Z: %f\nYaw: %f\nPitch: %f\n",
-                    Math.sin(pitch)*cameraDistance-200,
+                    Math.sin(pitch)*cameraDistance,
                     Math.cos(pitch)*cameraDistance,
                     yaw,
                     pitch);
@@ -104,14 +92,6 @@ public class VisualizerWindow {
         });
 
         pane3d.setOnScroll(scroll -> {
-            /*System.out.println(rootZoom.getX());
-            double zoomFactor = rootZoom.getX();
-            zoomFactor = rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/20;
-            zoomFactor = Math.max(zoomFactor, 1.0);
-            zoomFactor = Math.min(zoomFactor, 100);
-            rootZoom.setX(zoomFactor);
-            rootZoom.setY(zoomFactor);*/
-
             cameraDistance+=scroll.getDeltaY()*SENSITIVITY/5;
             camera.setTranslateZ(cameraDistance);
 
@@ -145,8 +125,8 @@ public class VisualizerWindow {
 
         camera = new PerspectiveCamera();
         camera.setTranslateZ(-1*cameraDistance);
-        camera.setTranslateX(-200);
-        camera.setTranslateY(-200);
+        camera.setTranslateX(0);
+        camera.setTranslateY(0);
         camera.setFarClip(100);
         camera.setNearClip(0.0001);
         pane3d.setCamera(camera);
@@ -258,6 +238,14 @@ public class VisualizerWindow {
         rotateX.setAngle(0);
         rotateY.setAngle(0);
         rotateZ.setAngle(0);
+
+        yaw=0;
+        pitch=0;
+
+        camera.setTranslateX(Math.sin(yaw)*cameraDistance);
+        camera.setTranslateY(Math.sin(pitch)*cameraDistance);
+        camera.setTranslateZ(Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
+
         rootZoom.setX(25);
         rootZoom.setY(25);
     }
