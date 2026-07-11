@@ -23,15 +23,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 
-/*
-TODO
- *   Implement rotations by a certain axis
- *   Add more matrix functionality to the actual application?
- *
- *
- *
-*/
-
 public class VisualizerWindow {
     private Stage window;
     private Group root3D;
@@ -48,6 +39,11 @@ public class VisualizerWindow {
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+    private double cameraDistance;
+    private PerspectiveCamera camera;
+
+    private double pitch = 0;
+    private double yaw = 0;
 
     final double SENSITIVITY = 1.0;
 
@@ -63,7 +59,7 @@ public class VisualizerWindow {
         setup3D();
 
 
-        root3D.getTransforms().addAll(rotateX, rotateY, rotateZ);
+        camera.getTransforms().addAll(rotateX, rotateY, rotateZ);
         double[] mousePosition = new double[2];
 
         pane3d.setOnMousePressed((MouseEvent me) -> {
@@ -75,27 +71,50 @@ public class VisualizerWindow {
             double dx = (mousePosition[0] - me.getSceneX());
             double dy = (mousePosition[1] - me.getSceneY());
 
-            if (me.isPrimaryButtonDown()) {
+            /*if (me.isPrimaryButtonDown()) {
                 if(me.isShiftDown()){
                     rotateZ.setAngle(rotateZ.getAngle() - dx * SENSITIVITY);
                 }else {
                     rotateX.setAngle(rotateX.getAngle() - dy * SENSITIVITY);
                     rotateY.setAngle(rotateY.getAngle() - dx * SENSITIVITY);
                 }
-            }
+            }*/
+            yaw+=dx/(SENSITIVITY*10);
+            pitch+=dy/(SENSITIVITY*10);
+
+            camera.setTranslateX(Math.sin(yaw)*cameraDistance-200);
+            camera.setTranslateY(Math.sin(pitch)*cameraDistance-200);
+            camera.setTranslateZ(Math.cos(pitch)*cameraDistance);
+
+
+            System.out.println(Math.sin(pitch)*cameraDistance-200);
+            System.out.println(Math.cos(pitch)*cameraDistance);
+
+            rotateX.setAngle(pitch);
+            rotateY.setAngle(yaw);
+
+            System.out.printf("Camera Y: %f\nCamera Z: %f\nYaw: %f\nPitch: %f\n",
+                    Math.sin(pitch)*cameraDistance-200,
+                    Math.cos(pitch)*cameraDistance,
+                    yaw,
+                    pitch);
 
             mousePosition[0] = me.getSceneX();
             mousePosition[1] = me.getSceneY();
         });
 
         pane3d.setOnScroll(scroll -> {
-            System.out.println(rootZoom.getX());
+            /*System.out.println(rootZoom.getX());
             double zoomFactor = rootZoom.getX();
             zoomFactor = rootZoom.getX()+scroll.getDeltaY()*SENSITIVITY/20;
             zoomFactor = Math.max(zoomFactor, 1.0);
             zoomFactor = Math.min(zoomFactor, 100);
             rootZoom.setX(zoomFactor);
-            rootZoom.setY(zoomFactor);
+            rootZoom.setY(zoomFactor);*/
+
+            cameraDistance+=scroll.getDeltaY()*SENSITIVITY/5;
+            camera.setTranslateZ(cameraDistance);
+
         });
 
         Scene scene = new Scene(root, 600, 400);
@@ -106,7 +125,7 @@ public class VisualizerWindow {
     private void setup3D() {
         root3D = new Group();
 
-
+        cameraDistance = 20;
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.RED, 0, 1000, 0));
         root3D.getChildren().add(new VectorArrow(Color.BLACK, 0, 0, 1000));
@@ -114,11 +133,18 @@ public class VisualizerWindow {
         root3D.getChildren().add(light);
         rootZoom = new Scale(25,25,25,0,0,0);
 
+        PointLight pointLight = new PointLight(Color.WHITE);
+        pointLight.setTranslateX(-500);
+        pointLight.setTranslateY(-500);
+        pointLight.setTranslateZ(-500);
+
+        root3D.getChildren().add(pointLight);
+
         pane3d.setRoot(root3D);
         root3D.getTransforms().add(rootZoom);
 
-        PerspectiveCamera camera = new PerspectiveCamera();
-        camera.setTranslateZ(-10);
+        camera = new PerspectiveCamera();
+        camera.setTranslateZ(-1*cameraDistance);
         camera.setTranslateX(-200);
         camera.setTranslateY(-200);
         camera.setFarClip(100);
