@@ -3,7 +3,7 @@ package com.github.shoelacer.math;
 import java.util.Vector;
 
 public class Vector3D {
-    private final double x, y, z;
+    private double x, y, z;
 
     // Constructors
     public Vector3D(double x, double y, double z){
@@ -68,10 +68,18 @@ public class Vector3D {
         return this.z;
     }
 
+    //Setters
+    public void setX(double x) {this.x=x;}
+    public void setY(double y) {this.y=y;}
+    public void setZ(double z) {this.z=z;}
+    public void setPosition(double x, double y, double z){
+        this.x=x;
+        this.y=y;
+        this.z=z;
+    }
+
 
     // Utility
-
-
     public boolean equals(Object o){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

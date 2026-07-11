@@ -16,12 +16,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
 
 public class VisualizerWindow {
     private static final double INITIAL_CAMERA_DISTANCE = 80;
@@ -34,17 +32,21 @@ public class VisualizerWindow {
     private SubScene pane3d;
     @FXML
     private VBox vectorList;
+
+    // These will be applied to the camera rig
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+
     private double cameraDistance;
+    private Group cameraRig;
     private PerspectiveCamera camera;
 
     private double pitch = 0;
     private double yaw = 0;
+    private double roll = 0;
 
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
-
 
     public VisualizerWindow(Stage window) {
         this.window = window;
@@ -57,8 +59,9 @@ public class VisualizerWindow {
 
         setup3D();
 
+        // Add rotations to the camera rig (not the camera directly)
+        cameraRig.getTransforms().addAll(rotateX, rotateY, rotateZ);
 
-        camera.getTransforms().addAll(rotateX, rotateY);
         double[] mousePosition = new double[2];
 
         pane3d.setOnMousePressed((MouseEvent me) -> {
@@ -66,23 +69,29 @@ public class VisualizerWindow {
             mousePosition[1] = me.getSceneY();
         });
 
-        pane3d.setOnMouseDragged((MouseEvent me) -> {
-            double dx = (mousePosition[0] - me.getSceneX());
-            double dy = (mousePosition[1] - me.getSceneY());
+        pane3d.setOnMouseDragged((MouseEvent mouse) -> {
+            double dx = (mousePosition[0] - mouse.getSceneX());
+            double dy = (mousePosition[1] - mouse.getSceneY());
 
-            yaw+=dx/(SENSITIVITY*100);
-            pitch+=dy/(SENSITIVITY*100);
+            if (mouse.isControlDown()) {
+                //rotates around Z axis
+                roll -= dx / (SENSITIVITY * 100);
+            } else {
+                yaw -= dx / (SENSITIVITY * 100);
+                pitch += dy / (SENSITIVITY * 100);
+            }
+
+            pitch = Math.max(-Math.PI/2 + 0.01, Math.min(Math.PI/2 - 0.01, pitch));
 
             positionCamera();
 
-            mousePosition[0] = me.getSceneX();
-            mousePosition[1] = me.getSceneY();
+            mousePosition[0] = mouse.getSceneX();
+            mousePosition[1] = mouse.getSceneY();
         });
 
         pane3d.setOnScroll(scroll -> {
-            cameraDistance+=scroll.getDeltaY()*SENSITIVITY/5;
-            //camera.setTranslateZ(cameraDistance);
-
+            cameraDistance += scroll.getDeltaY() * SENSITIVITY / 5;
+            cameraDistance = Math.max(10, cameraDistance);
             positionCamera();
         });
 
@@ -92,52 +101,69 @@ public class VisualizerWindow {
     }
 
     private void positionCamera() {
-        camera.setTranslateX(-1*Math.sin(yaw)*cameraDistance+OFFSET);
-        camera.setTranslateY(-1*Math.sin(pitch)*cameraDistance+OFFSET);
-        camera.setTranslateZ(-1*Math.cos(yaw)*Math.cos(pitch)*cameraDistance);
+        cameraRig.setTranslateX(0);
+        cameraRig.setTranslateY(0);
+        cameraRig.setTranslateZ(0);
 
-        rotateX.setAngle(-1*Math.toDegrees(pitch));
+        camera.setTranslateX(0);
+        camera.setTranslateY(0);
+        camera.setTranslateZ(-cameraDistance);
+
+        rotateX.setAngle(Math.toDegrees(pitch));
         rotateY.setAngle(Math.toDegrees(yaw));
+        rotateZ.setAngle(Math.toDegrees(roll));
     }
 
     private void setup3D() {
         root3D = new Group();
         cameraDistance = INITIAL_CAMERA_DISTANCE;
 
-        Box box = new Box(20,20,20);
-        box.setMaterial(new PhongMaterial(Color.rgb(0, 0, 0,0.5)));
-        box.setTranslateX(0);
-        box.setTranslateY(0);
-        box.setTranslateZ(0);
-
+        // Create a box at origin
+        Box box = new Box(20, 20, 20);
+        box.setMaterial(new PhongMaterial(Color.rgb(0, 0, 0, 0.5)));
         root3D.getChildren().add(box);
 
+        // Add axis arrows
         root3D.getChildren().add(new VectorArrow(Color.RED, 1000, 0, 0));
         root3D.getChildren().add(new VectorArrow(Color.GREEN, 0, 1000, 0));
         root3D.getChildren().add(new VectorArrow(Color.BLUE, 0, 0, 1000));
-        AmbientLight light = new AmbientLight(Color.rgb(200,200,200,1));
-        root3D.getChildren().add(light);
 
-        root3D.setTranslateX(0);
-        root3D.setTranslateY(0);
+        // Lighting
+        AmbientLight light = new AmbientLight(Color.rgb(200, 200, 200, 1));
+        root3D.getChildren().add(light);
 
         PointLight pointLight = new PointLight(Color.WHITE);
         pointLight.setTranslateX(-50);
         pointLight.setTranslateY(-50);
         pointLight.setTranslateZ(50);
-
         root3D.getChildren().add(pointLight);
 
+        // Set up the scene
         pane3d.setRoot(root3D);
-        //root3D.getTransforms().add(rootZoom);
 
+        // Create camera and camera rig
         camera = new PerspectiveCamera(true);
-        camera.setTranslateZ(-1*cameraDistance);
-        camera.setTranslateX(OFFSET);
-        camera.setTranslateY(OFFSET);
-        camera.setFarClip(1000);
+        camera.setFarClip(10000);
         camera.setNearClip(0.01);
+
+        cameraRig = new Group();
+        cameraRig.getChildren().add(camera);
+
+        camera.setTranslateZ(-cameraDistance);
+
+        root3D.getChildren().add(cameraRig);
+
         pane3d.setCamera(camera);
+
+        positionCamera();
+    }
+
+    public void resetView(ActionEvent event) throws Exception {
+        yaw = 0;
+        pitch = 0;
+        roll = 0;
+        cameraDistance = INITIAL_CAMERA_DISTANCE;
+        positionCamera();
     }
 
     public void exitVisualizer(ActionEvent event) throws Exception {
@@ -146,7 +172,7 @@ public class VisualizerWindow {
         window.setScene(startWindow.getPane());
     }
 
-    //Called by the Add Vector button in FXML
+    // Called by the Add Vector button in FXML
     public void addVector(ActionEvent event) throws Exception {
         Dialog<Double[]> dialog = new Dialog<>();
         dialog.setTitle("Add Vector");
@@ -168,85 +194,85 @@ public class VisualizerWindow {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButton) {
-                return new Double[]{Double.valueOf(inputX.getText()), Double.valueOf(inputY.getText()), Double.valueOf(inputZ.getText())};
+                try {
+                    return new Double[]{Double.valueOf(inputX.getText()),
+                            Double.valueOf(inputY.getText()),
+                            Double.valueOf(inputZ.getText())};
+                } catch (NumberFormatException e) {
+                    return null;
+                }
             }
             return null;
         });
 
         Optional<Double[]> result = dialog.showAndWait();
         result.ifPresent(text -> {
-                addVectorToPane(text[0],text[1],text[2],Color.BLUE);
-            }
-        );
+            addVectorToPane(text[0], text[1], text[2], Color.BLUE);
+        });
     }
 
     public void addVectorToPane(double x, double y, double z, Color color) {
-
         System.out.printf("Adding Vector: (%f, %f, %f)\n", x, y, z);
-        DisplayItem arrow = new DisplayItem(x,y,z,color);
+        DisplayItem arrow = new DisplayItem(x, y, z, color);
         root3D.getChildren().add(arrow.getArrow());
         vectorList.getChildren().add(arrow.getLabel());
-        arrow.getLabel().setOnMouseClicked(mouseEvent -> {
-            if(mouseEvent.getButton() == MouseButton.PRIMARY){
 
-                if(clickedItems.contains(arrow)){
+        arrow.getLabel().setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                if (clickedItems.contains(arrow)) {
                     clickedItems.remove(arrow);
                     arrow.getLabel().setBackground(Background.EMPTY);
-                }else{
+                } else {
                     clickedItems.add(arrow);
-                    arrow.getLabel().setBackground(Background.fill(Color.rgb(0,0,255,0.05)));
+                    arrow.getLabel().setBackground(Background.fill(Color.rgb(0, 0, 255, 0.05)));
                 }
             }
         });
     }
+
     public void addVectorToPane(Vector3D vector, Color color) {
         addVectorToPane(vector.getX(), vector.getY(), vector.getZ(), color);
     }
 
     public void dotProduct(ActionEvent event) throws Exception {
-        if(clickedItems.size()!=2){
+        if (clickedItems.size() != 2) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Must select 2 vectors");
             alert.setContentText("Please select 2 vectors to display the dot product");
             alert.showAndWait();
-        }else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Dot Product");
             alert.setHeaderText("Dot Product");
-            alert.setContentText("Dot product of "+clickedItems.get(0).getLabel().getText()
-                    + " and "+clickedItems.get(1).getLabel().getText()+" is "
-                    +clickedItems.get(0).getArrow().getVector().dot(clickedItems.get(1).getArrow().getVector()));
+            alert.setContentText("Dot product of " + clickedItems.get(0).getLabel().getText()
+                    + " and " + clickedItems.get(1).getLabel().getText() + " is "
+                    + clickedItems.get(0).getArrow().getVector().dot(clickedItems.get(1).getArrow().getVector()));
             alert.showAndWait();
         }
     }
+
     public void crossProduct(ActionEvent event) throws Exception {
-        if(clickedItems.size()!=2){
+        if (clickedItems.size() != 2) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Must select 2 vectors");
-            alert.setContentText("Please select 2 vectors to display the dot product");
+            alert.setContentText("Please select 2 vectors to display the cross product");
             alert.showAndWait();
-        }else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Cross Product");
 
-            alert.getDialogPane().setContent(new Label("Cross product of "+clickedItems.get(0).getLabel().getText()
-                    + " and "+clickedItems.get(1).getLabel().getText()+" is "
-                    +clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector())));
+            alert.getDialogPane().setContent(new Label("Cross product of " + clickedItems.get(0).getLabel().getText()
+                    + " and " + clickedItems.get(1).getLabel().getText() + " is "
+                    + clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector())));
 
             ButtonType addButton = new ButtonType("Add Vector");
-
             alert.getButtonTypes().add(addButton);
+
             Optional<ButtonType> selected = alert.showAndWait();
-            if(selected.isPresent()&&selected.get()==(addButton)){
-                addVectorToPane(clickedItems.get(0).getArrow().getVector().cross(clickedItems.get(1).getArrow().getVector()),Color.BLUE);
+            if (selected.isPresent() && selected.get() == addButton) {
+                addVectorToPane(clickedItems.get(0).getArrow().getVector()
+                        .cross(clickedItems.get(1).getArrow().getVector()), Color.BLUE);
             }
         }
-    }
-    public void resetView(ActionEvent event) throws Exception {
-        yaw=0;
-        pitch=0;
-        cameraDistance=INITIAL_CAMERA_DISTANCE;
-
-        positionCamera();
     }
 }
