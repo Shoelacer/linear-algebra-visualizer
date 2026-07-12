@@ -87,18 +87,14 @@ public class VisualizerWindow {
                     .add(cameraUp.normalize().scale(dy/10))
                     .normalize()
                     .scale(cameraDistance);
-            System.out.println("New Position: "+newPosition);
 
             Vector3D a = new Vector3D(cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ()).normalize();
             Vector3D b = new Vector3D(newPosition.getX(), newPosition.getY(), newPosition.getZ()).normalize();
-            System.out.println("A: "+a+" B: "+b);
 
             Vector3D axis = a.cross(b);
             double c = a.dot(b);
             double s = axis.magnitude();
-            System.out.println("Axis: "+axis);
             axis=axis.normalize();
-            System.out.println("Axis Normal: "+axis);
 
             if(c>0.999999999) return;
 
@@ -107,15 +103,12 @@ public class VisualizerWindow {
                     {axis.getZ(),0,-axis.getX()},
                     {-axis.getY(),axis.getX(),0}});
             double angle = Math.acos(c);
-            //Matrix rotation = Matrix.identity(3).add(K.scale(s)).add(K.multiply(K).scale((1-c)));
             Matrix rotation = Matrix.identity(3).add(K.scale(Math.sin(angle))).add(K.multiply(K).scale(1 - Math.cos(angle)));
-            System.out.println("Rotation: "+rotation.multiply(cameraPosition).normalize().scale(cameraDistance));
 
             cameraUp = rotation.multiply(cameraUp).normalize();
             cameraRight = rotation.multiply(cameraRight).normalize();
             cameraPosition = rotation.multiply(cameraPosition).normalize().scale(cameraDistance);
 
-            System.out.println("Camera Up: "+cameraUp+"\nCamera Right: "+cameraRight);
 
             positionCamera();
         });
@@ -132,15 +125,12 @@ public class VisualizerWindow {
     }
 
     private void positionCamera() {
-
         camera.setTranslateX(cameraPosition.getX());
         camera.setTranslateY(cameraPosition.getY());
         camera.setTranslateZ(cameraPosition.getZ());
-
-        /*rotateX.setAngle(Math.toDegrees(pitch));
-        rotateY.setAngle(Math.toDegrees(yaw));
-        rotateZ.setAngle(Math.toDegrees(roll));*/
+        // TODO: MANAGE ANGLES
     }
+
 
     private void setup3D() {
         root3D = new Group();
@@ -191,6 +181,7 @@ public class VisualizerWindow {
         pitch = 0;
         roll = 0;
         cameraDistance = INITIAL_CAMERA_DISTANCE;
+        cameraPosition = new Vector3D(0,0,-1*cameraDistance);
         positionCamera();
     }
 
