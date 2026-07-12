@@ -44,10 +44,34 @@ class MatrixTest {
 
     @org.junit.jupiter.api.Test
     void determinant() {
+
+        Vector3D a = new Vector3D(0,0,80).normalize();
+        Vector3D b = new Vector3D(10,10,80).normalize();
+        Vector3D cameraUp = new Vector3D(0,1,0);
+        Vector3D cameraRight = new Vector3D(1,0,0);
+
+        Vector3D axis = a.cross(b);
+        double c = a.dot(b);
+        double s = axis.magnitude();
+        axis=axis.normalize();
+
+        Matrix K = new Matrix(new double[][]{
+                {0,-axis.getZ(),axis.getY()},
+                {axis.getZ(),0,-axis.getX()},
+                {-axis.getY(),axis.getX(),0}});
+        Matrix rotation = Matrix.identity(3).add(K.scale(s)).add(K.multiply(K).scale((1-c)));
+        System.out.println("New: "+b+"\nRotation: "+rotation.multiply(a).normalize().scale(80));
+
+        cameraUp = rotation.multiply(cameraUp).normalize();
+        a = rotation.multiply(a).normalize().scale(80);
+        cameraRight = (rotation.multiply(cameraRight)).normalize();
+
+        System.out.println("A: "+a+"Camera Up: "+cameraUp+"\nCamera Right: "+cameraRight);
     }
 
     @org.junit.jupiter.api.Test
     void transpose() {
+        System.out.println(new Vector3D(0.0000, 0.1231, -0.9924).cross(new Vector3D(0.0000, 0.2452, -0.9695)));
     }
 
     @org.junit.jupiter.api.Test

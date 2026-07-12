@@ -40,7 +40,7 @@ public class Vector3D {
         return x * v.x + y * v.y + z * v.z;
     }
     public Vector3D cross(Vector3D v){
-        return new Vector3D(y * v.z-z*v.y, z * v.x-x*v.z, x * v.y-y*v.z);
+        return new Vector3D(y * v.z-z*v.y, z * v.x-x*v.z, x * v.y-y*v.x);
     }
 
     // Properties
@@ -88,6 +88,6 @@ public class Vector3D {
                 (Math.abs(this.y - v.y) < 0.0000001) &&
                 (Math.abs(this.z - v.z) < 0.0000001);       }
     public String toString(){
-        return "[" + this.x + ", " + this.y + ", " + this.z+"]";
+        return "[%.4f, %.4f, %.4f]".formatted(this.x, this.y, this.z);
     }
 }

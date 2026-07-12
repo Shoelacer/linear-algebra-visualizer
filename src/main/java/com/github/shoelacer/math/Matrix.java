@@ -26,6 +26,18 @@ public class Matrix {
         return new Matrix(matrix);
     }
 
+    public Matrix add(Matrix matrix){
+        if(matrix == null) throw new IllegalArgumentException("Matrix cannot be null");
+        if(matrix.matrix.length != this.matrix.length|| matrix.matrix[0].length != this.matrix[0].length)throw new IllegalArgumentException("Matrices have different sizes");
+        double[][] newMatrix = new double[this.matrix.length][this.matrix[0].length];
+        for(int i = 0; i < matrix.matrix.length; i++){
+            for(int j = 0; j < matrix.matrix[0].length; j++){
+                newMatrix[i][j] = matrix.matrix[i][j]+this.matrix[i][j];
+            }
+        }
+        return new Matrix(newMatrix);
+    }
+
     public Matrix multiply(Matrix matrix){
         if(matrix == null) throw new NullPointerException("Cannot multiply null matrix");
         if(matrix.matrix.length != this.matrix[0].length) {
@@ -73,6 +85,15 @@ public class Matrix {
             }
         }
         return result;
+    }
+
+    public Matrix scale(double factor){
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                matrix[i][j] *= factor;
+            }
+        }
+        return this;
     }
 
     public static Matrix rotation2D(double angle){
