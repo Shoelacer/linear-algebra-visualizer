@@ -66,7 +66,7 @@ public class VisualizerWindow {
         setup3D();
 
         // Add rotations to the camera rig (not the camera directly)
-        camera.getTransforms().addAll(rotateY,rotateX);
+        camera.getTransforms().addAll(rotateX, rotateY);
 
         double[] mousePosition = new double[2];
 
@@ -83,11 +83,22 @@ public class VisualizerWindow {
             //dx=0;
             //dy=100;
 
+
+            /*DEBUG CODE*/
+            {
+                if (Math.abs(dy) > Math.abs(dx)) dx = 0;
+                else dy = 0;
+
+            }
+            /*END*/
+
             Vector3D newPosition = cameraPosition
                     .add(cameraRight.normalize().scale(dx/3))
                     .add(cameraUp.normalize().scale(dy/3))
                     .normalize()
                     .scale(cameraDistance);
+
+
 
             Vector3D a = new Vector3D(cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ()).normalize();
             Vector3D b = new Vector3D(newPosition.getX(), newPosition.getY(), newPosition.getZ()).normalize();
@@ -110,12 +121,18 @@ public class VisualizerWindow {
             cameraRight = rotation.multiply(cameraRight).normalize();
             cameraPosition = rotation.multiply(cameraPosition).normalize().scale(cameraDistance);
 
+            //Reorthonormalize?
+            Vector3D forward = cameraPosition.normalize().scale(1);
+            cameraRight = forward.cross(cameraUp).normalize();
+            cameraUp = cameraRight.cross(forward).normalize();
+
+
 
             positionCamera();
         });
 
         pane3d.setOnScroll(scroll -> {
-            cameraDistance += scroll.getDeltaY() * SENSITIVITY / 5;
+            cameraDistance -= scroll.getDeltaY() * SENSITIVITY / 5;
             cameraDistance = Math.max(10, cameraDistance);
             positionCamera();
         });
@@ -126,13 +143,15 @@ public class VisualizerWindow {
     }
 
     private void positionCamera() {
+        cameraPosition=cameraPosition.normalize().scale(cameraDistance);
         camera.setTranslateX(cameraPosition.getX());
         camera.setTranslateY(cameraPosition.getY());
         camera.setTranslateZ(cameraPosition.getZ());
 
         Vector3D forward = cameraPosition.normalize().scale(-1);
+        Vector3D defaultForward = new Vector3D(0,0,-1);
 
-        Vector3D defaultForward = new Vector3D(0, 0, -1);
+        //if(cameraPosition.getZ()>0) defaultForward.setZ(1);
 
         Vector3D axis = defaultForward.cross(forward);
         double dot = defaultForward.dot(forward);
@@ -145,16 +164,15 @@ public class VisualizerWindow {
         axis = axis.normalize();
         double angle = Math.toDegrees(Math.acos(dot));
 
+
         rotateX.setAxis(new Point3D(axis.getX(), axis.getY(), axis.getZ()));
         System.out.println("axis: " + axis);
         System.out.println("angle: " + angle);
+        System.out.println("Position: "+cameraPosition);
+        System.out.println("Camera Right: "+cameraRight);
+        System.out.println("Camera Up: "+cameraUp);
         rotateX.setAngle(180+angle);
     }
-
-
-
-
-
 
     private void setup3D() {
         root3D = new Group();
@@ -176,12 +194,12 @@ public class VisualizerWindow {
 
         // Lighting
         AmbientLight light = new AmbientLight(Color.rgb(200, 200, 200, 1));
-        root3D.getChildren().add(light);
+        //root3D.getChildren().add(light);
 
         PointLight pointLight = new PointLight(Color.WHITE);
         pointLight.setTranslateX(-50);
         pointLight.setTranslateY(-50);
-        pointLight.setTranslateZ(50);
+        pointLight.setTranslateZ(-50);
         root3D.getChildren().add(pointLight);
 
         // Set up the scene
