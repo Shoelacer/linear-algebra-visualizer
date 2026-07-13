@@ -66,7 +66,7 @@ public class VisualizerWindow {
         setup3D();
 
         // Add rotations to the camera rig (not the camera directly)
-        camera.getTransforms().addAll(rotateX, rotateY, rotateZ);
+        camera.getTransforms().addAll(rotateY,rotateX);
 
         double[] mousePosition = new double[2];
 
@@ -84,8 +84,8 @@ public class VisualizerWindow {
             //dy=100;
 
             Vector3D newPosition = cameraPosition
-                    .add(cameraRight.normalize().scale(dx/10))
-                    .add(cameraUp.normalize().scale(dy/10))
+                    .add(cameraRight.normalize().scale(dx/3))
+                    .add(cameraUp.normalize().scale(dy/3))
                     .normalize()
                     .scale(cameraDistance);
 
@@ -129,14 +129,31 @@ public class VisualizerWindow {
         camera.setTranslateX(cameraPosition.getX());
         camera.setTranslateY(cameraPosition.getY());
         camera.setTranslateZ(cameraPosition.getZ());
-        rotateY.setAngle(-90-Math.toDegrees(Math.atan2(cameraPosition.getZ(), cameraPosition.getX())));
-        rotateX.setAxis(new Point3D(cameraRight.getX(), cameraRight.getY(), cameraRight.getZ()));
-        //rotateX.setAngle(Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
-        //rotateX.setAngle(10);
-        //rotateX.setAngle(Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
-        System.out.println("Angle: "+-Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
 
+        Vector3D forward = cameraPosition.normalize().scale(-1);
+
+        Vector3D defaultForward = new Vector3D(0, 0, -1);
+
+        Vector3D axis = defaultForward.cross(forward);
+        double dot = defaultForward.dot(forward);
+
+        if (axis.magnitude() < 1e-6) {
+            rotateX.setAngle(0);
+            return;
+        }
+
+        axis = axis.normalize();
+        double angle = Math.toDegrees(Math.acos(dot));
+
+        rotateX.setAxis(new Point3D(axis.getX(), axis.getY(), axis.getZ()));
+        System.out.println("axis: " + axis);
+        System.out.println("angle: " + angle);
+        rotateX.setAngle(180+angle);
     }
+
+
+
+
 
 
     private void setup3D() {
@@ -189,6 +206,8 @@ public class VisualizerWindow {
         roll = 0;
         cameraDistance = INITIAL_CAMERA_DISTANCE;
         cameraPosition = new Vector3D(0,0,-1*cameraDistance);
+        cameraRight = new Vector3D(1,0,0);
+        cameraUp = new Vector3D(0,1,0);
         positionCamera();
     }
 
