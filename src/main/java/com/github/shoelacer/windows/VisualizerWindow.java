@@ -7,6 +7,7 @@ import com.github.shoelacer.visuals.DisplayItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -128,7 +129,13 @@ public class VisualizerWindow {
         camera.setTranslateX(cameraPosition.getX());
         camera.setTranslateY(cameraPosition.getY());
         camera.setTranslateZ(cameraPosition.getZ());
-        // TODO: MANAGE ANGLES
+        rotateY.setAngle(-90-Math.toDegrees(Math.atan2(cameraPosition.getZ(), cameraPosition.getX())));
+        rotateX.setAxis(new Point3D(cameraRight.getX(), cameraRight.getY(), cameraRight.getZ()));
+        //rotateX.setAngle(Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
+        //rotateX.setAngle(10);
+        //rotateX.setAngle(Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
+        System.out.println("Angle: "+-Math.toDegrees(Math.atan2(cameraPosition.getY(), Math.sqrt(cameraPosition.getX()*cameraPosition.getX()+cameraPosition.getZ()*cameraPosition.getZ()))));
+
     }
 
 
