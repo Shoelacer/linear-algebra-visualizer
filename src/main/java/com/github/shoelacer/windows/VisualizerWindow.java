@@ -3,6 +3,7 @@ package com.github.shoelacer.windows;
 import com.github.shoelacer.geometry.VectorArrow;
 import com.github.shoelacer.math.Matrix;
 import com.github.shoelacer.math.Vector3D;
+import com.github.shoelacer.objects.OrbitCamera;
 import com.github.shoelacer.visuals.DisplayItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,25 +36,9 @@ public class VisualizerWindow {
     @FXML
     private VBox vectorList;
 
-    // These will be applied to the camera rig
-    private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-    private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
-    private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
+    private OrbitCamera orbitCamera;
 
-    private double cameraDistance;
-    private Group cameraRig;
-    private PerspectiveCamera camera;
 
-    private double pitch = 0;
-    private double yaw = 0;
-    private double roll = 0;
-
-    private Vector3D cameraPosition;
-    private Vector3D cameraUp;
-    private Vector3D cameraRight;
-
-    private VectorArrow cameraRightArrow;
-    private VectorArrow cameraUpArrow;
 
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
 
@@ -68,8 +53,6 @@ public class VisualizerWindow {
 
         setup3D();
 
-        // Add rotations to the camera rig (not the camera directly)
-        camera.getTransforms().addAll(rotateX, rotateY);
 
         double[] mousePosition = new double[2];
 
@@ -83,61 +66,13 @@ public class VisualizerWindow {
             double dy = (mousePosition[1] - mouse.getSceneY());
             mousePosition[0] = mouse.getSceneX();
             mousePosition[1] = mouse.getSceneY();
-            //dx=0;
-            //dy=100;
+            orbitCamera.moveCamera(dx,dy);
 
-
-            /*DEBUG CODE*/
-            {
-                if (Math.abs(dy) > Math.abs(dx)) dx = 0;
-                else dy = 0;
-
-            }
-            /*END*/
-
-            Vector3D newPosition = cameraPosition
-                    .add(cameraRight.normalize().scale(dx/3))
-                    .add(cameraUp.normalize().scale(dy/3))
-                    .normalize()
-                    .scale(cameraDistance);
-
-
-
-            Vector3D a = new Vector3D(cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ()).normalize();
-            Vector3D b = new Vector3D(newPosition.getX(), newPosition.getY(), newPosition.getZ()).normalize();
-
-            Vector3D axis = a.cross(b);
-            double c = a.dot(b);
-            double s = axis.magnitude();
-            axis=axis.normalize();
-
-            if(c>0.999999999) return;
-
-            Matrix K = new Matrix(new double[][]{
-                    {0,-axis.getZ(),axis.getY()},
-                    {axis.getZ(),0,-axis.getX()},
-                    {-axis.getY(),axis.getX(),0}});
-            double angle = Math.acos(c);
-            Matrix rotation = Matrix.identity(3).add(K.scale(Math.sin(angle))).add(K.multiply(K).scale(1 - Math.cos(angle)));
-
-            cameraUp = rotation.multiply(cameraUp).normalize();
-            cameraRight = rotation.multiply(cameraRight).normalize();
-            cameraPosition = rotation.multiply(cameraPosition).normalize().scale(cameraDistance);
-
-            //Reorthonormalize?
-            Vector3D forward = cameraPosition.normalize().scale(1);
-            cameraRight = forward.cross(cameraUp).normalize();
-            cameraUp = cameraRight.cross(forward).normalize();
-
-
-
-            positionCamera();
         });
 
         pane3d.setOnScroll(scroll -> {
-            cameraDistance -= scroll.getDeltaY() * SENSITIVITY / 5;
-            cameraDistance = Math.max(10, cameraDistance);
-            positionCamera();
+
+            orbitCamera.zoomCamera(scroll.getDeltaY()*SENSITIVITY/5);
         });
 
         Scene scene = new Scene(root, 600, 400);
@@ -145,53 +80,9 @@ public class VisualizerWindow {
         return scene;
     }
 
-    private void positionCamera() {
-        cameraPosition=cameraPosition.normalize().scale(cameraDistance);
-        camera.setTranslateX(cameraPosition.getX());
-        camera.setTranslateY(cameraPosition.getY());
-        camera.setTranslateZ(cameraPosition.getZ());
-
-        Vector3D forward = cameraPosition.normalize().scale(-1);
-        Vector3D defaultForward = new Vector3D(0,0,-1);
-
-        cameraUpArrow.updateCoordinates(cameraUp.getX(), cameraUp.getY(), cameraUp.getZ());
-        cameraRightArrow.updateCoordinates(cameraRight.getX(), cameraRight.getY(), cameraRight.getZ());
-
-
-        //if(cameraPosition.getZ()>0) defaultForward.setZ(1);
-
-        Vector3D axis = defaultForward.cross(forward);
-        double dot = defaultForward.dot(forward);
-
-        if (axis.magnitude() < 1e-6) {
-            rotateX.setAngle(0);
-            return;
-        }
-
-        axis = axis.normalize();
-        double angle = Math.toDegrees(Math.acos(dot));
-
-
-        rotateX.setAxis(new Point3D(axis.getX(), axis.getY(), axis.getZ()));
-        System.out.println("axis: " + axis);
-        System.out.println("angle: " + angle);
-        System.out.println("Position: "+cameraPosition);
-        System.out.println("Camera Right: "+cameraRight);
-        System.out.println("Camera Up: "+cameraUp);
-        rotateX.setAngle(180+angle);
-    }
 
     private void setup3D() {
         root3D = new Group();
-        cameraDistance = INITIAL_CAMERA_DISTANCE;
-
-        cameraPosition = new Vector3D(0,0,-1*cameraDistance);
-        cameraUp = new Vector3D(0,1,0);
-        cameraRight = new Vector3D(1,0,0);
-
-        cameraRightArrow = new VectorArrow(Color.gray(1),cameraRight.getX(),cameraRight.getY(),cameraRight.getZ());
-        cameraUpArrow = new VectorArrow(Color.BLACK,cameraUp.getX(),cameraUp.getY(),cameraUp.getZ());
-        root3D.getChildren().addAll(cameraRightArrow,cameraUpArrow);
 
         // Create a box at origin
         Box box = new Box(20, 20, 20);
@@ -217,27 +108,16 @@ public class VisualizerWindow {
         pane3d.setRoot(root3D);
 
         // Create camera and camera rig
-        camera = new PerspectiveCamera(true);
-        camera.setFarClip(10000);
-        camera.setNearClip(0.01);
-
-        camera.setTranslateZ(-cameraDistance);
 
 
-        pane3d.setCamera(camera);
+        orbitCamera = new OrbitCamera();
 
-        positionCamera();
+        pane3d.setCamera(orbitCamera.getCamera());
+
     }
 
     public void resetView(ActionEvent event) throws Exception {
-        yaw = 0;
-        pitch = 0;
-        roll = 0;
-        cameraDistance = INITIAL_CAMERA_DISTANCE;
-        cameraPosition = new Vector3D(0,0,-1*cameraDistance);
-        cameraRight = new Vector3D(1,0,0);
-        cameraUp = new Vector3D(0,1,0);
-        positionCamera();
+        orbitCamera.resetView();
     }
 
     public void exitVisualizer(ActionEvent event) throws Exception {
