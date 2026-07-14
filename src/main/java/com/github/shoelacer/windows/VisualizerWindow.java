@@ -52,6 +52,9 @@ public class VisualizerWindow {
     private Vector3D cameraUp;
     private Vector3D cameraRight;
 
+    private VectorArrow cameraRightArrow;
+    private VectorArrow cameraUpArrow;
+
     private ArrayList<DisplayItem> clickedItems = new ArrayList<DisplayItem>();
 
     public VisualizerWindow(Stage window) {
@@ -151,6 +154,10 @@ public class VisualizerWindow {
         Vector3D forward = cameraPosition.normalize().scale(-1);
         Vector3D defaultForward = new Vector3D(0,0,-1);
 
+        cameraUpArrow.updateCoordinates(cameraUp.getX(), cameraUp.getY(), cameraUp.getZ());
+        cameraRightArrow.updateCoordinates(cameraRight.getX(), cameraRight.getY(), cameraRight.getZ());
+
+
         //if(cameraPosition.getZ()>0) defaultForward.setZ(1);
 
         Vector3D axis = defaultForward.cross(forward);
@@ -181,6 +188,10 @@ public class VisualizerWindow {
         cameraPosition = new Vector3D(0,0,-1*cameraDistance);
         cameraUp = new Vector3D(0,1,0);
         cameraRight = new Vector3D(1,0,0);
+
+        cameraRightArrow = new VectorArrow(Color.gray(1),cameraRight.getX(),cameraRight.getY(),cameraRight.getZ());
+        cameraUpArrow = new VectorArrow(Color.BLACK,cameraUp.getX(),cameraUp.getY(),cameraUp.getZ());
+        root3D.getChildren().addAll(cameraRightArrow,cameraUpArrow);
 
         // Create a box at origin
         Box box = new Box(20, 20, 20);
