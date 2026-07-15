@@ -1,5 +1,6 @@
 package com.github.shoelacer.windows;
 
+import com.github.shoelacer.geometry.Plane2D;
 import com.github.shoelacer.geometry.VectorArrow;
 import com.github.shoelacer.math.Matrix;
 import com.github.shoelacer.math.Vector3D;
@@ -52,8 +53,6 @@ public class VisualizerWindow {
         Parent root = loader.load();
 
         setup3D();
-
-
         double[] mousePosition = new double[2];
 
         pane3d.setOnMousePressed((MouseEvent me) -> {
@@ -106,13 +105,13 @@ public class VisualizerWindow {
 
         // Set up the scene
         pane3d.setRoot(root3D);
-
-        // Create camera and camera rig
-
-
         orbitCamera = new OrbitCamera();
-
         pane3d.setCamera(orbitCamera.getCamera());
+
+
+        //Test Stuff
+        Plane2D test = new Plane2D(Color.BLUE, 10, 10, 10, 1,1 );
+        root3D.getChildren().add(test);
 
     }
 
