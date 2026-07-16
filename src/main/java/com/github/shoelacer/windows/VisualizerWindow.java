@@ -6,6 +6,7 @@ import com.github.shoelacer.math.Matrix;
 import com.github.shoelacer.math.Vector3D;
 import com.github.shoelacer.objects.OrbitCamera;
 import com.github.shoelacer.visuals.DisplayItem;
+import com.github.shoelacer.visuals.MatrixDisplayItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -112,7 +113,8 @@ public class VisualizerWindow {
         //Test Stuff
         Plane2D test = new Plane2D(Color.BLUE, 10, 10, 10, 1,1 );
         root3D.getChildren().add(test);
-
+        MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(new Matrix(new double[][]{{1,2,3},{1,2,3},{1,2,3}}));
+        vectorList.getChildren().add(matrixDisplayItem.getLabel());
     }
 
     public void resetView(ActionEvent event) throws Exception {

@@ -115,13 +115,10 @@ public class DisplayItem {
 
     }
 
-
     public void setComponents(double x, double y, double z) {
         arrow.updateCoordinates(x, y, z);
         text.setText("(" + x + ", " + y + ", " + z + ")");
     }
-
-
 
     public VectorArrow getArrow() { return arrow; }
     public Label getLabel() { return text; }
