@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -163,6 +164,41 @@ public class VisualizerWindow {
         Optional<Double[]> result = dialog.showAndWait();
         result.ifPresent(text -> {
             addVectorToPane(text[0], text[1], text[2], Color.BLUE);
+        });
+    }
+
+    public void addMatrix(ActionEvent event) throws Exception {
+        Dialog<Matrix> dialog = new Dialog<>();
+        dialog.setTitle("Add Matrix");
+        dialog.setHeaderText("Enter Matrix");
+        GridPane grid = new GridPane();
+        dialog.getDialogPane().setContent(grid);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        TextField[] inputs = new TextField[9];
+        for (int i = 0; i < 9; i++) {
+            inputs[i] = new TextField();
+            grid.add(inputs[i], i%3, i/3);
+        }
+
+        ButtonType transformButton = new ButtonType("Add Matrix", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, transformButton);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == transformButton) {
+                Matrix newMatrix = new Matrix(3,3);
+                for(int i=0;i<9;i++){
+                    newMatrix.setCell(i/3,i%3,Double.valueOf(inputs[i].getText()));
+                }
+                return newMatrix;
+            }
+            return null;
+        });
+
+        Optional<Matrix> result = dialog.showAndWait();
+        result.ifPresent(newMatrix -> {
+            MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(newMatrix);
+            vectorList.getChildren().add(matrixDisplayItem.getLabel());
         });
     }
 

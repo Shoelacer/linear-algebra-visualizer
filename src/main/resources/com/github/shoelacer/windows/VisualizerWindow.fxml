@@ -4,7 +4,9 @@
 <?import javafx.scene.SubScene?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
@@ -35,6 +37,22 @@
             </Label>
          </children>
       </HBox>
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0">
+         <children>
+            <SplitMenuButton fx:id="addMenu" mnemonicParsing="false" text="Add...">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#addVector" text="Add Vector" />
+                <MenuItem mnemonicParsing="false" onAction="#addMatrix" text="Add Matrix" />
+              </items>
+            </SplitMenuButton>
+            <Button mnemonicParsing="false" onAction="#dotProduct" prefHeight="25.0" prefWidth="125.0" text="Dot Product" />
+            <Button mnemonicParsing="false" onAction="#crossProduct" prefHeight="25.0" prefWidth="125.0" text="Cross Product" />
+            <Button mnemonicParsing="false" onAction="#resetView" prefHeight="25.0" prefWidth="125.0" text="Reset View" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </VBox.margin>
+      </HBox>
       <HBox prefHeight="319.0" prefWidth="600.0" stylesheets="@../styles/styles.css">
          <children>
             <VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="315.0" prefWidth="159.0" style="-fx-background-color: white;">
@@ -51,17 +69,6 @@
               </root>
             </SubScene>
          </children>
-      </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#addVector" prefHeight="25.0" prefWidth="125.0" text="Add Vector" />
-            <Button mnemonicParsing="false" onAction="#dotProduct" prefHeight="25.0" prefWidth="125.0" text="Dot Product" />
-            <Button mnemonicParsing="false" onAction="#crossProduct" prefHeight="25.0" prefWidth="125.0" text="Cross Product" />
-            <Button mnemonicParsing="false" onAction="#resetView" prefHeight="25.0" prefWidth="125.0" text="Reset View" />
-         </children>
-         <VBox.margin>
-            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-         </VBox.margin>
       </HBox>
    </children>
 </VBox>

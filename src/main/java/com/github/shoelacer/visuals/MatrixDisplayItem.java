@@ -15,7 +15,7 @@ public class MatrixDisplayItem {
         this.matrix = matrix;
         text = new Label(matrix.toString());
         contextMenu = new ContextMenu();
-        MenuItem editMatrix = new MenuItem("Edit Vector");
+        MenuItem editMatrix = new MenuItem("Edit Matrix");
         contextMenu.getItems().addAll(editMatrix);
         text.setContextMenu(contextMenu);
 
@@ -33,7 +33,7 @@ public class MatrixDisplayItem {
                 grid.add(inputs[i], i%3, i/3);
             }
 
-            ButtonType transformButton = new ButtonType("Matrix Transform", ButtonBar.ButtonData.OK_DONE);
+            ButtonType transformButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
             dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, transformButton);
 
             dialog.setResultConverter(dialogButton -> {
