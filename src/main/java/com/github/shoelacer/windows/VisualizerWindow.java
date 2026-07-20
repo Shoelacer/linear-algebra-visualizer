@@ -112,10 +112,10 @@ public class VisualizerWindow {
 
 
         //Test Stuff
-        Plane2D test = new Plane2D(Color.BLUE, 10, 10, 10, 1,1 );
-        root3D.getChildren().add(test);
-        MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(new Matrix(new double[][]{{1,2,3},{1,2,3},{1,2,3}}));
-        vectorList.getChildren().add(matrixDisplayItem.getLabel());
+        //Plane2D test = new Plane2D(Color.BLUE, 10, 10, 10, 1,1 );
+        //root3D.getChildren().add(test);
+        //MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(new Matrix(new double[][]{{1,2,3},{1,2,3},{1,2,3}}),root3D);
+        //vectorList.getChildren().add(matrixDisplayItem.getLabel());
     }
 
     public void resetView(ActionEvent event) throws Exception {
@@ -197,7 +197,7 @@ public class VisualizerWindow {
 
         Optional<Matrix> result = dialog.showAndWait();
         result.ifPresent(newMatrix -> {
-            MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(newMatrix);
+            MatrixDisplayItem matrixDisplayItem = new MatrixDisplayItem(newMatrix, root3D);
             vectorList.getChildren().add(matrixDisplayItem.getLabel());
         });
     }

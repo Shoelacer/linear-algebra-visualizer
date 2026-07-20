@@ -1,9 +1,12 @@
 package com.github.shoelacer.visuals;
 
+import com.github.shoelacer.geometry.Plane2D;
 import com.github.shoelacer.math.Matrix;
 import com.github.shoelacer.math.Vector3D;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 import java.util.Optional;
 
@@ -11,12 +14,16 @@ public class MatrixDisplayItem {
     private Matrix matrix;
     private Label text;
     private ContextMenu contextMenu;
-    public MatrixDisplayItem(Matrix matrix) {
+    private Plane2D columnSpace;
+    private Group root;
+    public MatrixDisplayItem(Matrix matrix, Group root) {
         this.matrix = matrix;
         text = new Label(matrix.toString());
         contextMenu = new ContextMenu();
         MenuItem editMatrix = new MenuItem("Edit Matrix");
-        contextMenu.getItems().addAll(editMatrix);
+        MenuItem showColumnSpace = new MenuItem("Show Column Space");
+        MenuItem hideColumnSpace = new MenuItem("Hide Column Space");
+        contextMenu.getItems().addAll(editMatrix,showColumnSpace);
         text.setContextMenu(contextMenu);
 
         editMatrix.setOnAction(e -> {
@@ -57,7 +64,17 @@ public class MatrixDisplayItem {
                 this.getLabel().setText(matrix.toString());
             });
         });
-
+        showColumnSpace.setOnAction(e -> {
+            contextMenu.getItems().remove(showColumnSpace);
+            contextMenu.getItems().add(hideColumnSpace);
+            columnSpace = new Plane2D(Color.RED, 10,10,1,1,1);
+            root.getChildren().add(columnSpace);
+        });
+        hideColumnSpace.setOnAction(e->{
+            contextMenu.getItems().remove(hideColumnSpace);
+            contextMenu.getItems().add(showColumnSpace);
+            root.getChildren().remove(columnSpace);
+        });
 
     }
     public Label getLabel() { return text; }
